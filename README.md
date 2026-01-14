@@ -1,6 +1,6 @@
 # Calcolatore Fondo Pensione vs PAC
 
-https://pippo995.github.io/calcolatore-fondo-pensione-ita/
+https://pippo995.github.io/calcolatore-fondo-pensione-vs-pac/
 
 Confronta **Fondo Pensione** e **PAC in ETF** nel contesto fiscale italiano.
 
@@ -22,8 +22,8 @@ Confronta **Fondo Pensione** e **PAC in ETF** nel contesto fiscale italiano.
 ## Avvio locale
 
 ```bash
-git clone https://github.com/pippo995/calcolatore-fondo-pensione-ita.git
-cd calcolatore-fondo-pensione-ita
+git clone https://github.com/pippo995/calcolatore-fondo-pensione-vs-pac.git
+cd calcolatore-fondo-pensione-vs-pac
 # Aprire index.html con Live Server (VS Code) o qualsiasi server locale
 ```
 
