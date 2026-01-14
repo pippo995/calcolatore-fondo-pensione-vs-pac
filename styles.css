@@ -1326,13 +1326,17 @@ td.best-value {
         font-size: 0.7rem;
     }
 
-    /* Mobile: disabilita hover, usa click */
+    /* Mobile: disabilita hover completamente, usa solo click */
+    .tooltip .tooltip-text {
+        display: none !important;
+    }
+
     .tooltip:hover .tooltip-text {
-        display: none;
+        display: none !important;
     }
 
     .tooltip-text.active {
-        display: block;
+        display: block !important;
         position: fixed;
         bottom: auto;
         top: 50%;
