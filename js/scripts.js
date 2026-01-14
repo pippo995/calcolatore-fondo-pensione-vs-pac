@@ -171,59 +171,109 @@ function downloadCSV(csvContent, filename) {
 }
 
 /**
- * Inizializza i tooltip per mobile (click invece di hover)
+ * Inizializza il sistema di help modale per le label
  */
 function setupMobileTooltips() {
-    // Crea il backdrop una sola volta
-    const backdrop = document.createElement('div');
-    backdrop.className = 'tooltip-backdrop';
-    document.body.appendChild(backdrop);
+    // Definizione help content
+    const helpContent = {
+        reddito: {
+            title: 'Il tuo stipendio lordo',
+            text: 'Serve per calcolare quanto risparmi di tasse versando nel FP e quanto versa il datore di lavoro.'
+        },
+        durata: {
+            title: 'Durata simulazione',
+            text: 'Per quanti anni vuoi vedere l\'evoluzione dell\'investimento. Più è lunga, più si vedono gli effetti dell\'interesse composto.'
+        },
+        investimento: {
+            title: 'Quanto vuoi investire',
+            text: 'L\'importo che vuoi investire. In modalità cumulativa, è l\'importo versato ogni anno.'
+        },
+        contribuzioneDatoreFpPerc: {
+            title: 'Soldi gratis dall\'azienda',
+            text: 'Percentuale del tuo reddito che l\'azienda versa nel tuo FP. Controlla il tuo contratto o chiedi all\'HR.'
+        },
+        quotaMinAderentePerc: {
+            title: 'Quanto devi versare tu',
+            text: 'Percentuale minima del tuo reddito che devi versare per sbloccare il contributo del datore.'
+        },
+        compartoFp: {
+            title: 'Tipo di comparto',
+            text: 'Determina il rendimento atteso. I rendimenti sono già al netto della tassazione annuale (12.5-20%) come pubblicati da COVIP.'
+        },
+        etfPreset: {
+            title: 'Tipo di ETF',
+            text: 'Seleziona un ETF comune o inserisci un rendimento personalizzato. Rendimenti basati su medie storiche ~10 anni.'
+        },
+        rendimentoAnnualeFpPerc: {
+            title: 'Quanto rende il FP',
+            text: 'Rendimento annuo atteso del fondo pensione. Dati storici COVIP: 3-5% per fondi bilanciati.'
+        },
+        rendimentoAnnualePacPerc: {
+            title: 'Quanto rendono gli ETF',
+            text: 'Rendimento annuo atteso degli ETF. L\'MSCI World ha reso storicamente ~7-8%.'
+        },
+        modalitaCumulativa: {
+            title: 'Modalità cumulativa',
+            text: 'Sì: versi la quota ogni anno e vedi l\'accumulo totale.\nNo: vedi l\'evoluzione di un singolo versamento nel tempo.'
+        },
+        reinvestiRisparmio: {
+            title: 'Reinvesti risparmio fiscale',
+            text: 'Sì: il risparmio IRPEF viene reinvestito nel FP l\'anno dopo.\nNo: tenuto da parte e sommato alla fine.'
+        },
+        riscattoAnticipato: {
+            title: 'Riscatto totale anticipato',
+            text: 'Sì: i versamenti FP saranno tassati al 23% fisso.\nNo: tassazione normale 15% → 9%.'
+        },
+        mostraDettaglio: {
+            title: 'Dettaglio tabella',
+            text: 'Sì: mostra tutte le colonne nella tabella.\nNo: mostra solo Anno e i valori Exit.'
+        }
+    };
 
-    // Aggiungi X a tutti i tooltip
-    document.querySelectorAll('.tooltip-text').forEach(tooltipText => {
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'tooltip-close';
-        closeBtn.innerHTML = '×';
-        closeBtn.setAttribute('aria-label', 'Chiudi');
-        tooltipText.insertBefore(closeBtn, tooltipText.firstChild);
-    });
+    // Crea modal
+    const modal = document.createElement('div');
+    modal.className = 'help-modal';
+    modal.innerHTML = `
+        <div class="help-modal-backdrop"></div>
+        <div class="help-modal-content">
+            <button class="help-modal-close">×</button>
+            <div class="help-modal-title"></div>
+            <div class="help-modal-text"></div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 
-    // Funzione per chiudere tooltip attivo
-    function closeActiveTooltip() {
-        document.querySelectorAll('.tooltip-text.active').forEach(t => t.classList.remove('active'));
-        backdrop.classList.remove('active');
+    const modalTitle = modal.querySelector('.help-modal-title');
+    const modalText = modal.querySelector('.help-modal-text');
+
+    function closeModal() {
+        modal.classList.remove('active');
     }
 
-    // Click su icona tooltip
-    document.querySelectorAll('.tooltip-icon').forEach(icon => {
-        icon.addEventListener('click', function(e) {
+    function openModal(helpId) {
+        const help = helpContent[helpId];
+        if (!help) return;
+
+        modalTitle.textContent = help.title;
+        modalText.textContent = help.text;
+        modal.classList.add('active');
+    }
+
+    // Click su label con data-help
+    document.querySelectorAll('label[data-help]').forEach(label => {
+        label.addEventListener('click', function(e) {
             e.preventDefault();
-            e.stopPropagation();
-
-            // Solo su mobile (< 768px)
-            if (window.innerWidth >= 768) return;
-
-            const tooltip = this.closest('.tooltip');
-            const tooltipText = tooltip.querySelector('.tooltip-text');
-
-            // Chiudi altri tooltip aperti
-            closeActiveTooltip();
-
-            // Apri questo tooltip
-            tooltipText.classList.add('active');
-            backdrop.classList.add('active');
+            const helpId = this.getAttribute('data-help');
+            openModal(helpId);
         });
     });
 
-    // Click su X chiude
-    document.querySelectorAll('.tooltip-close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            closeActiveTooltip();
-        });
-    });
+    // Chiudi modal
+    modal.querySelector('.help-modal-close').addEventListener('click', closeModal);
+    modal.querySelector('.help-modal-backdrop').addEventListener('click', closeModal);
 
-    // Click su backdrop chiude
-    backdrop.addEventListener('click', closeActiveTooltip);
+    // Chiudi con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
 }

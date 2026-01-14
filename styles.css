@@ -591,87 +591,85 @@ select.form-control::-ms-expand {
     accent-color: var(--color-accent-primary);
 }
 
-/* Tooltip */
-.tooltip {
-    position: relative;
-    display: inline-flex;
+/* Help Labels - click per info */
+label[data-help] {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
 }
 
-/* Area hover estesa per catturare il mouse verso il tooltip */
-.tooltip::before {
-    content: '';
+label[data-help]:hover {
+    color: var(--color-accent-primary);
+}
+
+/* Modal Help */
+.help-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.help-modal.active {
+    display: flex;
+}
+
+.help-modal-backdrop {
     position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 220px;
-    height: 200px;
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
 }
 
-.tooltip:hover::before {
-    pointer-events: auto;
+.help-modal-content {
+    position: relative;
+    background: var(--color-bg-card);
+    color: var(--color-text);
+    padding: 1.5rem;
+    padding-top: 2.5rem;
+    border-radius: var(--radius-lg);
+    max-width: 350px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
-.tooltip-icon {
-    width: 16px;
-    height: 16px;
-    background: var(--color-text-muted);
-    color: var(--color-bg-card);
-    border-radius: 50%;
-    font-size: 0.625rem;
-    font-weight: 700;
+.help-modal-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.help-modal-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: help;
+    border-radius: 50%;
 }
 
-.tooltip-text {
-    display: none;
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-bg-header);
-    color: var(--color-text-inverse);
-    padding: 0.75rem 1rem;
-    padding-bottom: 1rem;
-    border-radius: var(--radius-md);
-    font-size: 0.75rem;
-    font-weight: 400;
-    width: 220px;
-    z-index: 1000;
-    box-shadow: var(--shadow-lg);
-    margin-bottom: 8px;
-}
-
-/* Freccia verso il basso */
-.tooltip-text::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 8px solid transparent;
-    border-top-color: var(--color-bg-header);
-}
-
-.tooltip:hover .tooltip-text {
-    display: block;
-}
-
-.tooltip-title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.tooltip-close {
-    display: none;
-}
-
-.tooltip-backdrop {
-    display: none;
+.help-modal-close:hover {
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
 }
 
 /* ============================================
@@ -1353,59 +1351,6 @@ td.best-value {
     .docs-section td {
         padding: 0.4rem 0.5rem;
         font-size: 0.7rem;
-    }
-
-    /* Mobile: disabilita hover completamente, usa solo click */
-    .tooltip .tooltip-text {
-        display: none !important;
-    }
-
-    .tooltip:hover .tooltip-text {
-        display: none !important;
-    }
-
-    .tooltip-text.active {
-        display: block !important;
-        position: fixed;
-        bottom: auto;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: calc(100vw - 40px);
-        max-width: 300px;
-        z-index: 9999;
-        padding: 1.25rem;
-        font-size: 0.875rem;
-    }
-
-    .tooltip-backdrop {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 9998;
-    }
-
-    .tooltip-backdrop.active {
-        display: block;
-    }
-
-    .tooltip-close {
-        display: block;
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        width: 24px;
-        height: 24px;
-        border: none;
-        background: transparent;
-        color: var(--color-text-inverse);
-        font-size: 1.25rem;
-        cursor: pointer;
-        line-height: 1;
     }
 
     .highlight {
