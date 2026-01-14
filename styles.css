@@ -637,6 +637,14 @@ select.form-control::-ms-expand {
     margin-bottom: 0.25rem;
 }
 
+.tooltip-close {
+    display: none;
+}
+
+.tooltip-backdrop {
+    display: none;
+}
+
 /* ============================================
    Cards (Results & Strategy)
    ============================================ */
@@ -1318,18 +1326,13 @@ td.best-value {
         font-size: 0.7rem;
     }
 
-    .tooltip:hover::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 9998;
+    /* Mobile: disabilita hover, usa click */
+    .tooltip:hover .tooltip-text {
+        display: none;
     }
 
-    .tooltip-text {
+    .tooltip-text.active {
+        display: block;
         position: fixed;
         bottom: auto;
         top: 50%;
@@ -1340,6 +1343,36 @@ td.best-value {
         z-index: 9999;
         padding: 1.25rem;
         font-size: 0.875rem;
+    }
+
+    .tooltip-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+    }
+
+    .tooltip-backdrop.active {
+        display: block;
+    }
+
+    .tooltip-close {
+        display: block;
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: transparent;
+        color: var(--color-text-inverse);
+        font-size: 1.25rem;
+        cursor: pointer;
+        line-height: 1;
     }
 
     .highlight {
