@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Fondo Pensione vs PAC</title>
+    <link rel="icon" href="./favicon.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div>
+                    <h1>Calcolatore Fondo Pensione vs PAC</h1>
+                    <div class="subheader">Confronta strategie di investimento per il tuo futuro</div>
+                </div>
+            </div>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Cambia tema">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="page-container">
+        <div class="main-content">
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab active" data-tab="calculator">
+                    <i class="fas fa-calculator"></i> Calcolatore
+                </div>
+                <div class="tab" data-tab="documentation">
+                    <i class="fas fa-book"></i> Guida
+                </div>
+            </div>
+
+            <!-- Calculator Section -->
+            <div class="tab-content active" id="calculator-content">
+
+                <!-- Parameters Form -->
+                <form id="input-form">
+                    <div class="params-grid">
+
+                        <!-- Card: Parametri Base -->
+                        <div class="param-card">
+                            <div class="card-header">
+                                <i class="fas fa-sliders-h"></i>
+                                Parametri Base
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group full-width">
+                                        <label for="reddito">
+                                            Reddito Annuale (€)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Il tuo stipendio lordo</div>
+                                                    Serve per calcolare quanto risparmi di tasse versando nel FP e quanto versa il datore di lavoro.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="reddito" class="form-control" value="30000" min="0" step="1000">
+                                    </div>
+                                </div>
+                                <div class="form-row" style="margin-top: 1rem;">
+                                    <div class="form-group">
+                                        <label for="durata">
+                                            Durata (anni)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Durata simulazione</div>
+                                                    Per quanti anni vuoi vedere l'evoluzione dell'investimento. Più è lunga, più si vedono gli effetti dell'interesse composto.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="durata" class="form-control" value="30" min="1" max="50">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="investimento">
+                                            Investimento (€)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Quanto vuoi investire</div>
+                                                    L'importo che vuoi investire. In modalità cumulativa, è l'importo versato ogni anno. Il calcolatore mostra come cresce nel tempo con le diverse strategie.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="investimento" class="form-control" value="3000" min="0" step="100">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="contribuzioneDatoreFpPerc">
+                                            Contributo Datore (%)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Soldi gratis dall'azienda</div>
+                                                    Percentuale del tuo reddito che l'azienda versa nel tuo FP. Controlla il tuo contratto o chiedi all'HR.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="contribuzioneDatoreFpPerc" class="form-control" value="1.5" min="0" max="100" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quotaMinAderentePerc">
+                                            Quota Aderente (%)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Quanto devi versare tu</div>
+                                                    Percentuale minima del tuo reddito che devi versare per sbloccare il contributo del datore.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="quotaMinAderentePerc" class="form-control" value="1" min="0" max="100" step="0.1">
+                                    </div>
+                                </div>
+                                <div class="info-box" id="info-contributo-datore">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Per ottenere il contributo datore devi investire almeno <strong id="min-investimento-display">300 €</strong>/anno</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card: Rendimenti e Opzioni -->
+                        <div class="param-card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-line"></i>
+                                Rendimenti e Opzioni
+                            </div>
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="compartoFp">
+                                            Comparto FP
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Tipo di comparto</div>
+                                                    Determina il rendimento atteso. I rendimenti sono già al netto della tassazione annuale (12.5-20%) come pubblicati da COVIP.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <select id="compartoFp" class="form-control">
+                                            <option value="dinamico" selected>Dinamico (~4%)</option>
+                                            <option value="bilanciato">Bilanciato (~3%)</option>
+                                            <option value="prudente">Prudente (~2.5%)</option>
+                                            <option value="garantito">Garantito (~2%)</option>
+                                            <option value="custom">Personalizzato</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="etfPreset">
+                                            ETF PAC
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Tipo di ETF</div>
+                                                    Seleziona un ETF comune o inserisci un rendimento personalizzato. Rendimenti basati su medie storiche ~10 anni.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <select id="etfPreset" class="form-control">
+                                            <option value="msciWorld" selected>MSCI World (~8%)</option>
+                                            <option value="ftseAllWorld">FTSE All-World (~7%)</option>
+                                            <option value="lifeStrategy80">LifeStrategy 80% (~6%)</option>
+                                            <option value="lifeStrategy60">LifeStrategy 60% (~5%)</option>
+                                            <option value="lifeStrategy40">LifeStrategy 40% (~4%)</option>
+                                            <option value="lifeStrategy20">LifeStrategy 20% (~3%)</option>
+                                            <option value="custom">Personalizzato</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="rendimentoAnnualeFpPerc">
+                                            Rendimento FP (%)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Quanto rende il FP</div>
+                                                    Rendimento annuo atteso del fondo pensione. Dati storici COVIP: 3-5% per fondi bilanciati.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="rendimentoAnnualeFpPerc" class="form-control" value="4" min="0" max="20" step="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="rendimentoAnnualePacPerc">
+                                            Rendimento PAC (%)
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Quanto rendono gli ETF</div>
+                                                    Rendimento annuo atteso degli ETF. L'MSCI World (azioni globali) ha reso storicamente ~7-8%.
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <input type="number" id="rendimentoAnnualePacPerc" class="form-control" value="8" min="0" max="20" step="0.1">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" id="modalitaCumulativa">
+                                            <span class="toggle-switch"></span>
+                                            Cumulativo
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Modalità cumulativa</div>
+                                                    <strong>Sì:</strong> versi la quota ogni anno e vedi l'accumulo totale.<br>
+                                                    <strong>No:</strong> vedi l'evoluzione di un singolo versamento nel tempo.
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" id="reinvestiRisparmio" checked>
+                                            <span class="toggle-switch"></span>
+                                            Reinvesti deduzione
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Reinvesti risparmio fiscale</div>
+                                                    <strong>Sì:</strong> il risparmio IRPEF viene reinvestito nel FP l'anno dopo.<br>
+                                                    <strong>No:</strong> tenuto da parte e sommato alla fine.
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" id="riscattoAnticipato">
+                                            <span class="toggle-switch"></span>
+                                            Riscatto anticipato
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Riscatto totale anticipato</div>
+                                                    <strong>Sì:</strong> i versamenti FP saranno tassati al 23% fisso.<br>
+                                                    <strong>No:</strong> tassazione normale 15% → 9%.
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" id="mostraDettaglio" checked>
+                                            <span class="toggle-switch"></span>
+                                            Mostra dettaglio
+                                            <span class="tooltip">
+                                                <span class="tooltip-icon">?</span>
+                                                <span class="tooltip-text">
+                                                    <div class="tooltip-title">Dettaglio tabella</div>
+                                                    <strong>Sì:</strong> mostra tutte le colonne nella tabella.<br>
+                                                    <strong>No:</strong> mostra solo Anno e i valori Exit.
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+
+                <!-- Metrics Dashboard -->
+                <div class="metrics-dashboard">
+                    <div class="metric-card metric-fp">
+                        <div class="metric-badge" style="display: none;">Migliore</div>
+                        <div class="metric-label">Exit Fondo Pensione</div>
+                        <div class="metric-value" id="metric-fp-value">-</div>
+                        <div class="metric-subtitle">Solo FP</div>
+                    </div>
+                    <div class="metric-card metric-pac">
+                        <div class="metric-badge" style="display: none;">Migliore</div>
+                        <div class="metric-label">Exit PAC</div>
+                        <div class="metric-value" id="metric-pac-value">-</div>
+                        <div class="metric-subtitle">Solo PAC</div>
+                    </div>
+                    <div class="metric-card metric-mix">
+                        <div class="metric-badge" style="display: none;">Migliore</div>
+                        <div class="metric-label">Exit Mix</div>
+                        <div class="metric-value" id="metric-mix-value">-</div>
+                        <div class="metric-subtitle">FP fino deduzione + PAC</div>
+                    </div>
+                    <div class="metric-card metric-breakeven">
+                        <div class="metric-label">Breakeven</div>
+                        <div class="metric-value" id="metric-breakeven-value">-</div>
+                        <div class="metric-subtitle">Orizzonte minimo per preferire ETF</div>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="results-section">
+                    <h3 class="results-title" id="toggle-results">
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                        <i class="fas fa-table"></i> Risultati della Simulazione
+                    </h3>
+                    <div class="results-content">
+                    <div class="table-container">
+                        <div id="grid-div">
+                            <!-- Table inserted by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="download-csv" class="btn btn-primary">
+                            <i class="fas fa-download"></i>
+                            Scarica CSV
+                        </button>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-section">
+                    <h3 class="chart-title" id="toggle-chart">
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                        <i class="fas fa-chart-line"></i> Andamento nel Tempo
+                    </h3>
+                    <div class="chart-content">
+                        <div class="chart-container">
+                            <canvas id="results-chart"></canvas>
+                        </div>
+                        <div class="info-box" style="margin-top: 1rem;">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Se investi sempre entro il limite di deduzione, <strong>Exit FP = Exit Mix</strong> (le linee si sovrappongono). Clicca sulla legenda per nascondere una linea.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Documentation Section -->
+            <div class="tab-content" id="documentation-content">
+                <div class="docs-section">
+
+                    <p><strong>Indice:</strong> <a href="#introduction">Il problema</a> · <a href="#step1">Vantaggi FP</a> · <a href="#step2">Vantaggi ETF</a> · <a href="#step3">Confronto</a> · <a href="#step4">Simulazione</a> · <a href="#options">Opzioni</a> · <a href="#results">Risultati</a> · <a href="#fonti">Fonti</a></p>
+
+                    <h2 id="introduction">Il problema: FP o PAC?</h2>
+
+                    <p>Vuoi investire per il futuro. Hai due opzioni:</p>
+                    <ul>
+                        <li><strong>Fondo Pensione (FP)</strong> — risparmio previdenziale con vantaggi fiscali, soldi bloccati fino al raggiungimento dei requisiti pensionistici</li>
+                        <li><strong>PAC in ETF</strong> — investimento diretto sul mercato, massima flessibilità</li>
+                    </ul>
+
+                    <p><strong>La domanda:</strong> i vantaggi fiscali del FP battono i rendimenti potenzialmente più alti dell'ETF?</p>
+
+                    <h3>Glossario</h3>
+                    <table>
+                        <tr>
+                            <th>Termine</th>
+                            <th>Significato</th>
+                        </tr>
+                        <tr>
+                            <td><strong>FP</strong></td>
+                            <td>Fondo Pensione. Strumento previdenziale complementare con vantaggi fiscali.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PAC</strong></td>
+                            <td>Piano di Accumulo del Capitale. Strategia: versi una quota fissa ogni mese.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ETF</strong></td>
+                            <td>Exchange Traded Fund. Fondo che replica un indice (es. MSCI World).</td>
+                        </tr>
+                    </table>
+
+                    <h3>Confronto rapido</h3>
+                    <table>
+                        <tr>
+                            <th></th>
+                            <th>Fondo Pensione</th>
+                            <th>ETF</th>
+                        </tr>
+                        <tr>
+                            <td>Deducibilità</td>
+                            <td>Sì (fino €5.164)</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Tassa all'uscita</td>
+                            <td>9-15%</td>
+                            <td>Nessuna</td>
+                        </tr>
+                        <tr>
+                            <td>Tassa sui rendimenti</td>
+                            <td>Ogni anno (12.5-20%)</td>
+                            <td>Solo alla vendita (26%)</td>
+                        </tr>
+                        <tr>
+                            <td>Contributo datore</td>
+                            <td>Sì</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td>Liquidità</td>
+                            <td>Bloccata (vedi sotto)</td>
+                            <td>Totale</td>
+                        </tr>
+                    </table>
+
+                    <h3>Uscite anticipate dal FP</h3>
+                    <p>Il capitale è bloccato fino alla pensione, ma esistono eccezioni:</p>
+                    <table>
+                        <tr>
+                            <th>Motivo</th>
+                            <th>Max prelevabile</th>
+                            <th>Anzianità</th>
+                            <th>Tassazione</th>
+                        </tr>
+                        <tr>
+                            <td>Spese sanitarie</td>
+                            <td>75%</td>
+                            <td>Nessuna</td>
+                            <td>15% → 9%*</td>
+                        </tr>
+                        <tr>
+                            <td>Acquisto/ristrutturazione prima casa</td>
+                            <td>75%</td>
+                            <td>8 anni</td>
+                            <td>23%</td>
+                        </tr>
+                        <tr>
+                            <td>Altre esigenze (senza giustificativo)</td>
+                            <td>30%</td>
+                            <td>8 anni</td>
+                            <td>23%</td>
+                        </tr>
+                    </table>
+                    <p><small>*L'aliquota parte dal 15% e scende dello 0.3% per ogni anno oltre il 15°, fino al minimo del 9% (con 35+ anni di iscrizione).</small></p>
+
+                    <div class="highlight">
+                        <strong>Esempio usato in questa guida:</strong> Mario, 35 anni, reddito €30.000, investe €3.000/anno. Il datore versa 1.5% se Mario versa almeno 1%.
+                    </div>
+
+                    <h2 id="step1">Step 1: I vantaggi del FP</h2>
+
+                    <h3>Contributo del datore</h3>
+                    <p>L'azienda aggiunge soldi gratis se versi almeno la quota minima.</p>
+<pre>Quota minima: 1% di €30.000 = €300
+Contributo datore: 1.5% di €30.000 = €450
+
+Mario versa €3.000 → l'azienda aggiunge €450 gratis</pre>
+
+                    <h3>Deduzione fiscale</h3>
+                    <p>I versamenti si deducono dal reddito → paghi meno IRPEF oggi.</p>
+<pre>Senza FP: IRPEF su €30.000 = €6.900
+Con FP:   IRPEF su €27.000 = €6.210
+Risparmio OGGI: €690</pre>
+
+                    <p><strong>Attenzione:</strong> all'uscita pagherai il 9-15% sul montante. Ma è meno del 23% che avresti pagato oggi.</p>
+
+                    <h3>Limite deduzione</h3>
+                    <p>Puoi dedurre max €5.164/anno, ma il contributo datore conta nel limite.</p>
+<pre>Limite totale: €5.164
+- Datore:      €450
+= Per te:      €4.714</pre>
+
+                    <h3>Totale vantaggi FP (anno 1)</h3>
+<pre>Mario versa:       €3.000
++ Datore:          €450
++ Risparmio IRPEF: €690
+= Valore totale:   €4.140</pre>
+
+                    <h2 id="step2">Step 2: I vantaggi dell'ETF</h2>
+
+                    <h3>Rendimento potenziale più alto</h3>
+<pre>FP tipico: 2-4% annuo
+ETF MSCI World: 5-8% annuo (media storica)</pre>
+
+                    <h3>Tassazione più efficiente</h3>
+                    <p>Il FP tassa i rendimenti ogni anno. L'ETF solo alla vendita.</p>
+<pre>FP: tassa rendimenti OGNI ANNO al 12.5-20%
+    → Il montante cresce più lentamente
+
+ETF: tassa rendimenti SOLO ALLA VENDITA al 26%
+     → L'interesse composto lavora su tutto</pre>
+
+                    <p><strong>Esempio:</strong> €10.000 che crescono del 5%</p>
+<pre>FP:  Rendimento €500, tasse €100 → crescono €10.400
+ETF: Rendimento €500, tasse €0   → crescono €10.500
+
+Differenza: €100/anno che generano altri interessi</pre>
+
+                    <h2 id="step3">Step 3: Il confronto</h2>
+<pre>                        FP              ETF
+─────────────────────────────────────────────
+Versamento              €3.000          €3.000
++ Datore                €450            €0
+= Capitale iniziale     €3.450          €3.000
+─────────────────────────────────────────────
+Deduzione IRPEF         €690            €0
+Tassa uscita            9-15%           Nessuna
+─────────────────────────────────────────────
+Tassa rendimenti        Ogni anno       Solo vendita
+Aliquota                12.5-20%        26%</pre>
+
+                    <p>Il FP parte con €1.140 in più (€450 + €690). Ma l'ETF può recuperare grazie a rendimenti più alti e tassazione più efficiente.</p>
+
+                    <h2 id="step4">Step 4: Simulazione anno per anno</h2>
+
+                    <p>Rendimento FP: 3%, Rendimento PAC: 5%</p>
+
+                    <h3>Anno 1</h3>
+<pre>FP:  €3.450 × 1.03 = €3.554 + risparmio €690
+     Exit: €3.554 × 0.85 + €690 = €3.710
+
+PAC: €3.000 × 1.05 = €3.150
+     Exit: €3.150 - €39 (tasse) = €3.111
+
+→ FP vince: €3.710 vs €3.111</pre>
+
+                    <h3>Anno 2</h3>
+<pre>FP:  Montante €7.925, Exit €7.585
+PAC: Montante €6.458, Exit €6.339
+
+→ FP vince: €7.585 vs €6.339</pre>
+
+                    <h3>Anno 3</h3>
+<pre>FP:  Montante €12.591, Exit €11.589
+PAC: Montante €9.930, Exit €9.169
+
+→ FP vince: €11.589 vs €9.169</pre>
+
+                    <h3>Anno 15</h3>
+<pre>FP:  Exit €32.450
+PAC: Exit €29.800
+
+→ FP vince ancora, ma il gap si riduce</pre>
+
+                    <h3>Anno 20</h3>
+<pre>FP:  Exit €45.200
+PAC: Exit €44.900
+
+→ Quasi pari! Questo è il breakeven</pre>
+
+                    <h3>Anno 25</h3>
+<pre>FP:  Exit €58.100
+PAC: Exit €63.500
+
+→ PAC vince: €63.500 vs €58.100</pre>
+
+                    <p>Dopo il breakeven (~20 anni in questo esempio), il PAC supera il FP grazie al rendimento più alto e alla tassazione differita.</p>
+
+                    <h3>L'orizzonte temporale conta</h3>
+                    <p>Non tutti i versamenti hanno lo stesso orizzonte temporale:</p>
+                    <ul>
+                        <li><strong>Versamenti a inizio carriera:</strong> restano investiti 30-40 anni → l'ETF ha tempo per superare il FP</li>
+                        <li><strong>Versamenti a fine carriera:</strong> restano investiti 5-10 anni → il FP vince quasi sempre</li>
+                    </ul>
+                    <p>Inoltre, a fine carriera lo stipendio è tipicamente al massimo → aliquota IRPEF più alta → maggiore risparmio fiscale con il FP.</p>
+<pre>Esempio: stesso versamento di €3.000
+
+A 30 anni (RAL €25.000, aliquota 25%, orizzonte 35 anni):
+→ Risparmio fiscale FP: €750
+→ Ma l'ETF ha 35 anni per recuperare
+
+A 55 anni (RAL €50.000, aliquota 35%, orizzonte 10 anni):
+→ Risparmio fiscale FP: €1.050
+→ L'ETF ha solo 10 anni: non basta</pre>
+                    <p><strong>Conclusione:</strong> il FP diventa sempre più conveniente man mano che ci si avvicina alla pensione.</p>
+
+                    <h2 id="options">Le opzioni del calcolatore</h2>
+
+                    <h3>Modalità cumulativa</h3>
+                    <ul>
+                        <li><strong>No (default):</strong> evoluzione di un singolo versamento di €3.000</li>
+                        <li><strong>Sì:</strong> cosa succede versando €3.000 ogni anno</li>
+                    </ul>
+<pre>Consiglio: usa "No" per decidere dove mettere i soldi
+di quest'anno. Usa "Sì" per una stima del montante finale.</pre>
+
+                    <h3>Reinvesti deduzione</h3>
+                    <ul>
+                        <li><strong>Sì (default):</strong> il risparmio IRPEF viene reinvestito nel FP l'anno dopo → interesse composto</li>
+                        <li><strong>No:</strong> il risparmio resta sul tuo conto e viene sommato alla fine → più liquidità, meno rendimento</li>
+                    </ul>
+<pre>Con reinvestimento (30 anni): ~€26.000
+Senza reinvestimento:         €20.700
+Differenza: ~€5.300</pre>
+
+                    <h3>Riscatto anticipato</h3>
+                    <ul>
+                        <li><strong>No (default):</strong> tassazione FP normale, dal 15% fino al 9% dopo 35 anni</li>
+                        <li><strong>Sì:</strong> simula un riscatto anticipato totale con tassazione fissa al 23%</li>
+                    </ul>
+                    <p>Il riscatto anticipato si applica quando ritiri il capitale prima della pensione per motivi non sanitari (es. acquisto casa, altre esigenze). In questi casi la tassazione è sempre 23%, senza la riduzione graduale.</p>
+
+                    <h3>Mostra dettaglio</h3>
+                    <ul>
+                        <li><strong>Sì (default):</strong> mostra tutte le colonne nella tabella dei risultati</li>
+                        <li><strong>No:</strong> mostra solo Anno e i valori Exit (FP, PAC, Mix)</li>
+                    </ul>
+
+                    <h3>Le 3 strategie</h3>
+                    <table>
+                        <tr><th>Strategia</th><th>Descrizione</th></tr>
+                        <tr><td>Solo FP</td><td>Tutto nel fondo pensione</td></tr>
+                        <tr><td>Solo PAC</td><td>Tutto in ETF</td></tr>
+                        <tr><td>Mix</td><td>FP fino al limite deducibile, resto in PAC</td></tr>
+                    </table>
+
+                    <h2 id="results">Come leggere i risultati</h2>
+
+                    <h3>Le 4 card</h3>
+                    <table>
+                        <tr><th>Card</th><th>Significato</th></tr>
+                        <tr><td>Exit FP</td><td>Netto finale con solo Fondo Pensione</td></tr>
+                        <tr><td>Exit PAC</td><td>Netto finale con solo ETF</td></tr>
+                        <tr><td>Exit Mix</td><td>Netto finale con strategia mista</td></tr>
+                        <tr><td>Breakeven</td><td>Anni necessari perché l'ETF superi il FP</td></tr>
+                    </table>
+
+                    <h3>Breakeven</h3>
+                    <p>È l'orizzonte minimo oltre il quale l'ETF conviene. Esempio: breakeven 18 anni significa che prima conviene FP, dopo conviene ETF.</p>
+<pre>Orizzonte < breakeven → preferisci FP
+Orizzonte > breakeven → valuta ETF
+Orizzonte ≈ breakeven → quasi indifferente</pre>
+
+                    <h3>Le colonne della tabella</h3>
+                    <table>
+                        <tr><th>Colonna</th><th>Significato</th></tr>
+                        <tr><td>Entro Min</td><td>Quota per sbloccare contributo datore</td></tr>
+                        <tr><td>Extra Min</td><td>Quota oltre la soglia minima</td></tr>
+                        <tr><td>Entro Ded</td><td>Quota deducibile</td></tr>
+                        <tr><td>Extra Ded</td><td>Quota non deducibile</td></tr>
+                        <tr><td>Aderente</td><td>Totale versato da te</td></tr>
+                        <tr><td>Datore</td><td>Totale versato dall'azienda</td></tr>
+                        <tr><td>Risparmio</td><td>IRPEF risparmiata</td></tr>
+                        <tr><td>Exit</td><td>Netto se esci a quell'anno</td></tr>
+                    </table>
+
+                    <h3>Tassazione FP all'uscita</h3>
+<pre>Anni 1-15:  15%
+Anno 16+:   scende 0.3%/anno
+Anno 35+:   9% (minimo)</pre>
+
+                    <h2 id="fonti">Fonti e Approfondimenti</h2>
+
+                    <h3>Rendimenti Fondi Pensione (COVIP)</h3>
+                    <p>I rendimenti dei fondi pensione nel calcolatore sono basati sui dati pubblicati dalla COVIP (Commissione di Vigilanza sui Fondi Pensione). Questi rendimenti sono già <strong>al netto della tassazione annuale</strong> (12.5% su titoli di stato, 20% su altri investimenti).</p>
+                    <p><a href="https://www.covip.it/la-covip-e-la-sua-attivita/pubblicazioni-statistiche/relazione-annuale" target="_blank" rel="noopener">COVIP - Relazione Annuale</a></p>
+
+                    <h3>ETF Consigliati per PAC</h3>
+                    <p>Ecco alcuni ETF comunemente usati per un PAC a lungo termine:</p>
+                    <table>
+                        <tr>
+                            <th>ETF</th>
+                            <th>ISIN</th>
+                            <th>Allocazione</th>
+                            <th>Link</th>
+                        </tr>
+                        <tr>
+                            <td>MSCI World (SWDA)</td>
+                            <td>IE00B4L5Y983</td>
+                            <td>100% azioni paesi sviluppati</td>
+                            <td><a href="https://www.justetf.com/en/etf-profile.html?isin=IE00B4L5Y983" target="_blank" rel="noopener">JustETF</a></td>
+                        </tr>
+                        <tr>
+                            <td>FTSE All-World (VWCE)</td>
+                            <td>IE00BK5BQT80</td>
+                            <td>100% azioni globali</td>
+                            <td><a href="https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80" target="_blank" rel="noopener">JustETF</a></td>
+                        </tr>
+                        <tr>
+                            <td>LifeStrategy 80%</td>
+                            <td>IE00BMVB5R75</td>
+                            <td>80% azioni, 20% obbligazioni</td>
+                            <td><a href="https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5R75" target="_blank" rel="noopener">JustETF</a></td>
+                        </tr>
+                        <tr>
+                            <td>LifeStrategy 60%</td>
+                            <td>IE00BMVB5P51</td>
+                            <td>60% azioni, 40% obbligazioni</td>
+                            <td><a href="https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5P51" target="_blank" rel="noopener">JustETF</a></td>
+                        </tr>
+                        <tr>
+                            <td>LifeStrategy 40%</td>
+                            <td>IE00BMVB5M21</td>
+                            <td>40% azioni, 60% obbligazioni</td>
+                            <td><a href="https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5M21" target="_blank" rel="noopener">JustETF</a></td>
+                        </tr>
+                        <tr>
+                            <td>LifeStrategy 20%</td>
+                            <td>IE00BMVB5K07</td>
+                            <td>20% azioni, 80% obbligazioni</td>
+                            <td><a href="https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5K07" target="_blank" rel="noopener">JustETF</a></td>
+                        </tr>
+                    </table>
+
+                    <p class="disclaimer"><strong>Disclaimer:</strong> Questo calcolatore fornisce stime basate su rendimenti ipotizzati. Non costituisce consulenza finanziaria.</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" class="go-to-top" id="go-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <footer class="footer">
+        <p>© 2025 Calcolatore Fondo Pensione vs PAC | I calcoli sono stime, non consulenza finanziaria.</p>
+        <p class="github-link">
+            <a href="https://github.com/pippo995/calcolatore-fondo-pensione-ita" target="_blank" rel="noopener">
+                <i class="fab fa-github"></i> Ti è utile? Lascia una <i class="fas fa-star"></i> su GitHub!
+            </a>
+        </p>
+    </footer>
+
+    <script src="js/scripts.js"></script>
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>
