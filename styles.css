@@ -1318,6 +1318,17 @@ td.best-value {
         font-size: 0.7rem;
     }
 
+    .tooltip:hover::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+    }
+
     .tooltip-text {
         position: fixed;
         bottom: auto;
@@ -1327,6 +1338,8 @@ td.best-value {
         width: calc(100vw - 40px);
         max-width: 300px;
         z-index: 9999;
+        padding: 1.25rem;
+        font-size: 0.875rem;
     }
 
     .highlight {
