@@ -421,6 +421,13 @@ header {
     transition: var(--transition);
 }
 
+/* Mostra spinners su input number */
+input[type="number"].form-control::-webkit-outer-spin-button,
+input[type="number"].form-control::-webkit-inner-spin-button {
+    -webkit-appearance: inner-spin-button;
+    opacity: 1;
+}
+
 .form-control:focus {
     outline: none;
     border-color: var(--color-border-focus);
