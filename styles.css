@@ -646,27 +646,6 @@ label[data-help]:hover {
     margin-bottom: 0.5rem;
 }
 
-.help-modal-close {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    width: 24px;
-    height: 24px;
-    border: none;
-    background: transparent;
-    color: var(--color-text-muted);
-    font-size: 1.25rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.help-modal-close:hover {
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-}
 
 /* ============================================
    Cards (Results & Strategy)
