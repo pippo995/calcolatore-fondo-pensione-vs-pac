@@ -43,6 +43,7 @@ export class FinancialModel {
       let risparmioAccumulato = 0;
       let contributoAderenteTotale = 0;
       let contributoDatoreTotale = 0;
+      let contributoFPMixTotale = 0; // Tracking contributi FP nella strategia Mix
 
       // Risparmio fiscale dell'anno PRECEDENTE (disponibile per reinvestimento quest'anno)
       let risparmioDaReinvestire = 0;
@@ -107,6 +108,7 @@ export class FinancialModel {
 
           investimentoTotalePAC += contributoPacAnno;
           investimentoTotalePACMix += contributoPacMixAnno;
+          contributoFPMixTotale += contributoFpMixAnno; // Tracking contributi FP Mix
           risparmioAccumulato += risparmioAnnoEffettivo;
           contributoAderenteTotale += investimentoEffettivoAnno;
           contributoDatoreTotale += quotaDatoreFp;
@@ -134,6 +136,7 @@ export class FinancialModel {
 
             investimentoTotalePAC = contributoPacAnno;
             investimentoTotalePACMix = contributoPacMixAnno;
+            contributoFPMixTotale = contributoFpMixAnno; // Tracking contributi FP Mix
 
             // Risparmio fiscale generato nell'anno 1 (disponibile dall'anno 2)
             risparmioAnnoEffettivo = risparmioAnnoBase;
@@ -174,6 +177,7 @@ export class FinancialModel {
 
               // Aggiorna contributo totale
               contributoAderenteTotale += risparmioDaReinvestire;
+              contributoFPMixTotale += risparmioDaReinvestire; // Tracking contributi FP Mix
 
               // Contributi di quest'anno (solo risparmio reinvestito, datore = 0)
               aderenteAnno = risparmioDaReinvestire;
@@ -204,9 +208,10 @@ export class FinancialModel {
         const tassazioneFP = this.calcolaTassazioneFp(anno - 1, riscattoAnticipato);
 
         // Calcolo exit FP
-        // Il risparmio fiscale di QUEST'ANNO non è ancora nel montante (sarà reinvestito l'anno prossimo)
-        // Quindi aggiungiamo sempre il risparmio dell'anno corrente al valore di exit
-        let exitFP = montanteFP * (1 - tassazioneFP);
+        // La tassazione 15-9% si applica solo ai CONTRIBUTI versati, non ai rendimenti
+        // (i rendimenti sono già tassati annualmente al 12.5-20%, incluso nel rendimento netto COVIP)
+        const contributiTotaliFP = contributoAderenteTotale + contributoDatoreTotale;
+        let exitFP = montanteFP - (contributiTotaliFP * tassazioneFP);
         if (reinvestiRisparmio) {
           // Aggiungi solo il risparmio pendente di quest'anno (non ancora reinvestito)
           exitFP += risparmioAnnoEffettivo;
@@ -220,7 +225,8 @@ export class FinancialModel {
         const exitPAC = montantePAC - (plusvalenzaPAC * FINANCIAL_CONSTANTS.TASSAZIONE_RENDITE_PAC);
 
         // Exit Mix (stessa logica del FP per la porzione FP)
-        let exitFPMix = montanteFPMix * (1 - tassazioneFP);
+        // Tassazione solo sui contributi FP Mix, non sui rendimenti
+        let exitFPMix = montanteFPMix - (contributoFPMixTotale * tassazioneFP);
         if (reinvestiRisparmio) {
           exitFPMix += risparmioAnnoEffettivo;
         } else {

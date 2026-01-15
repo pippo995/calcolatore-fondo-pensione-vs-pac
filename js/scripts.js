@@ -178,55 +178,55 @@ function setupMobileTooltips() {
     const helpContent = {
         reddito: {
             title: 'Il tuo stipendio lordo',
-            text: 'Serve per calcolare quanto risparmi di tasse versando nel FP e quanto versa il datore di lavoro.'
+            text: 'Il tuo Reddito Annuo Lordo (RAL). Serve per calcolare: 1) quanto risparmi di IRPEF versando nel fondo pensione (aliquota marginale 23-43%), 2) quanto versa il datore di lavoro come contributo aggiuntivo.'
         },
         durata: {
             title: 'Durata simulazione',
-            text: 'Per quanti anni vuoi vedere l\'evoluzione dell\'investimento. Più è lunga, più si vedono gli effetti dell\'interesse composto.'
+            text: 'Per quanti anni vuoi simulare l\'investimento. Più è lunga la durata, più si vedono gli effetti dell\'interesse composto. La tassazione FP scende dal 15% al 9% dopo 15 anni di partecipazione.'
         },
         investimento: {
             title: 'Quanto vuoi investire',
-            text: 'L\'importo che vuoi investire. In modalità cumulativa, è l\'importo versato ogni anno.'
+            text: 'L\'importo che vuoi investire. In modalità cumulativa viene versato ogni anno. Ricorda: il limite di deducibilità fiscale per il FP è €5.164,57/anno (escluso TFR e contributo datore).'
         },
         contribuzioneDatoreFpPerc: {
-            title: 'Soldi gratis dall\'azienda',
-            text: 'Percentuale del tuo reddito che l\'azienda versa nel tuo FP. Controlla il tuo contratto o chiedi all\'HR.'
+            title: 'Contributo datore di lavoro',
+            text: 'Percentuale del tuo reddito che l\'azienda versa nel tuo FP come benefit. È denaro aggiuntivo rispetto allo stipendio! Varia per contratto (es. metalmeccanici ~1.2-2%). Controlla il tuo CCNL o chiedi all\'HR.'
         },
         quotaMinAderentePerc: {
-            title: 'Quanto devi versare tu',
-            text: 'Percentuale minima del tuo reddito che devi versare per sbloccare il contributo del datore.'
+            title: 'Quota minima aderente',
+            text: 'Per ricevere il contributo del datore, molti contratti richiedono che tu versi almeno una certa percentuale del tuo reddito. Se non la versi, perdi il contributo aziendale. Verifica sul tuo CCNL.'
         },
         compartoFp: {
-            title: 'Tipo di comparto',
-            text: 'Determina il rendimento atteso. I rendimenti sono già al netto della tassazione annuale (12.5-20%) come pubblicati da COVIP.'
+            title: 'Comparto del fondo pensione',
+            text: 'Il comparto determina come vengono investiti i tuoi soldi. Garantito: capitale protetto, basso rendimento. Obbligazionario: principalmente bond. Bilanciato: mix azioni/bond. Azionario: più rischioso ma rendimento atteso maggiore. I rendimenti COVIP sono già netti.'
         },
         etfPreset: {
-            title: 'Tipo di ETF',
-            text: 'Seleziona un ETF comune o inserisci un rendimento personalizzato. Rendimenti basati su medie storiche ~10 anni.'
+            title: 'Tipo di ETF per il PAC',
+            text: 'ETF globali come MSCI World o FTSE All-World offrono diversificazione massima. I LifeStrategy combinano azioni e obbligazioni in percentuali fisse. Rendimenti basati su medie storiche ~10 anni, non garantiti per il futuro.'
         },
         rendimentoAnnualeFpPerc: {
-            title: 'Quanto rende il FP',
-            text: 'Rendimento annuo atteso del fondo pensione. Dati storici COVIP: 3-5% per fondi bilanciati.'
+            title: 'Rendimento fondo pensione',
+            text: 'Rendimento annuo atteso del FP. I dati COVIP (già al netto delle tasse annuali 12.5-20%) mostrano: Garantito ~2%, Obbligazionario ~2.5%, Bilanciato ~3%, Azionario ~4%. Puoi modificarlo manualmente.'
         },
         rendimentoAnnualePacPerc: {
-            title: 'Quanto rendono gli ETF',
-            text: 'Rendimento annuo atteso degli ETF. L\'MSCI World ha reso storicamente ~7-8%.'
+            title: 'Rendimento ETF',
+            text: 'Rendimento annuo atteso degli ETF. Storicamente: MSCI World ~10%, FTSE All-World ~9%, LifeStrategy 60% ~5%. Attenzione: rendimenti passati non garantiscono quelli futuri. Puoi modificarlo manualmente.'
         },
         modalitaCumulativa: {
             title: 'Modalità cumulativa',
-            text: 'Sì: versi la quota ogni anno e vedi l\'accumulo totale.\nNo: vedi l\'evoluzione di un singolo versamento nel tempo.'
+            text: 'Cumulativo ON: versi l\'importo ogni anno e vedi l\'accumulo totale nel tempo (scenario realistico di un PAC). Cumulativo OFF: simula un singolo versamento e la sua evoluzione, utile per capire l\'effetto del rendimento composto.'
         },
         reinvestiRisparmio: {
             title: 'Reinvesti risparmio fiscale',
-            text: 'Sì: il risparmio IRPEF viene reinvestito nel FP l\'anno dopo.\nNo: tenuto da parte e sommato alla fine.'
+            text: 'Reinvesti ON: il risparmio IRPEF ottenuto dalla deduzione viene reinvestito nel FP l\'anno successivo, massimizzando l\'effetto composto. Reinvesti OFF: il risparmio viene tenuto da parte e sommato al valore finale.'
         },
         riscattoAnticipato: {
-            title: 'Riscatto totale anticipato',
-            text: 'Sì: i versamenti FP saranno tassati al 23% fisso.\nNo: tassazione normale 15% → 9%.'
+            title: 'Riscatto anticipato',
+            text: 'Se prevedi di riscattare tutto il FP prima della pensione (es. per acquisto casa, spese sanitarie), la tassazione è fissa al 23%. Altrimenti, a scadenza la tassazione è 15% e scende dello 0.3%/anno fino al 9% dopo 35 anni.'
         },
         mostraDettaglio: {
-            title: 'Dettaglio tabella',
-            text: 'Sì: mostra tutte le colonne nella tabella.\nNo: mostra solo Anno e i valori Exit.'
+            title: 'Mostra dettaglio tabella',
+            text: 'Dettaglio ON: mostra tutte le colonne intermedie (versato, rendimento, tasse, contributo datore, ecc.). Dettaglio OFF: mostra solo Anno e i valori Exit finali per una vista più compatta.'
         }
     };
 
@@ -258,14 +258,11 @@ function setupMobileTooltips() {
         modal.classList.add('active');
     }
 
-    // Click su label con data-help
-    document.querySelectorAll('label[data-help]').forEach(label => {
-        label.addEventListener('click', function(e) {
-            // Non aprire modal se click su checkbox o toggle
-            if (e.target.tagName === 'INPUT' || e.target.classList.contains('toggle-switch')) {
-                return;
-            }
+    // Click su .help-trigger (solo il testo)
+    document.querySelectorAll('.help-trigger').forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             const helpId = this.getAttribute('data-help');
             openModal(helpId);
         });

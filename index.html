@@ -56,27 +56,27 @@
                             <div class="card-body">
                                 <div class="form-row">
                                     <div class="form-group full-width">
-                                        <label for="reddito" data-help="reddito">Reddito Annuale (€)</label>
+                                        <label for="reddito"><span class="help-trigger" data-help="reddito">Reddito Annuale (€)</span></label>
                                         <input type="number" id="reddito" class="form-control" value="30000" min="0" step="1000">
                                     </div>
                                 </div>
                                 <div class="form-row" style="margin-top: 1rem;">
                                     <div class="form-group">
-                                        <label for="durata" data-help="durata">Durata (anni)</label>
+                                        <label for="durata"><span class="help-trigger" data-help="durata">Durata (anni)</span></label>
                                         <input type="number" id="durata" class="form-control" value="30" min="1" max="50">
                                     </div>
                                     <div class="form-group">
-                                        <label for="investimento" data-help="investimento">Investimento (€)</label>
+                                        <label for="investimento"><span class="help-trigger" data-help="investimento">Investimento (€)</span></label>
                                         <input type="number" id="investimento" class="form-control" value="3000" min="0" step="100">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="contribuzioneDatoreFpPerc" data-help="contribuzioneDatoreFpPerc">Contributo Datore (%)</label>
+                                        <label for="contribuzioneDatoreFpPerc"><span class="help-trigger" data-help="contribuzioneDatoreFpPerc">Contributo Datore (%)</span></label>
                                         <input type="number" id="contribuzioneDatoreFpPerc" class="form-control" value="1.5" min="0" max="100" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="quotaMinAderentePerc" data-help="quotaMinAderentePerc">Quota Aderente (%)</label>
+                                        <label for="quotaMinAderentePerc"><span class="help-trigger" data-help="quotaMinAderentePerc">Quota Aderente (%)</span></label>
                                         <input type="number" id="quotaMinAderentePerc" class="form-control" value="1" min="0" max="100" step="0.1">
                                     </div>
                                 </div>
@@ -96,7 +96,7 @@
                             <div class="card-body">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="compartoFp" data-help="compartoFp">Comparto FP</label>
+                                        <label for="compartoFp"><span class="help-trigger" data-help="compartoFp">Comparto FP</span></label>
                                         <select id="compartoFp" class="form-control">
                                             <option value="dinamico" selected>Dinamico (~4%)</option>
                                             <option value="bilanciato">Bilanciato (~3%)</option>
@@ -106,7 +106,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="etfPreset" data-help="etfPreset">ETF PAC</label>
+                                        <label for="etfPreset"><span class="help-trigger" data-help="etfPreset">ETF PAC</span></label>
                                         <select id="etfPreset" class="form-control">
                                             <option value="msciWorld" selected>MSCI World (~8%)</option>
                                             <option value="ftseAllWorld">FTSE All-World (~7%)</option>
@@ -120,43 +120,43 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="rendimentoAnnualeFpPerc" data-help="rendimentoAnnualeFpPerc">Rendimento FP (%)</label>
+                                        <label for="rendimentoAnnualeFpPerc"><span class="help-trigger" data-help="rendimentoAnnualeFpPerc">Rendimento FP (%)</span></label>
                                         <input type="number" id="rendimentoAnnualeFpPerc" class="form-control" value="4" min="0" max="20" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="rendimentoAnnualePacPerc" data-help="rendimentoAnnualePacPerc">Rendimento PAC (%)</label>
+                                        <label for="rendimentoAnnualePacPerc"><span class="help-trigger" data-help="rendimentoAnnualePacPerc">Rendimento PAC (%)</span></label>
                                         <input type="number" id="rendimentoAnnualePacPerc" class="form-control" value="8" min="0" max="20" step="0.1">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="toggle-label" data-help="modalitaCumulativa">
+                                        <label class="toggle-label">
                                             <input type="checkbox" id="modalitaCumulativa" checked>
                                             <span class="toggle-switch"></span>
-                                            Cumulativo
+                                            <span class="help-trigger" data-help="modalitaCumulativa">Cumulativo</span>
                                         </label>
                                     </div>
                                     <div class="form-group">
-                                        <label class="toggle-label" data-help="reinvestiRisparmio">
+                                        <label class="toggle-label">
                                             <input type="checkbox" id="reinvestiRisparmio" checked>
                                             <span class="toggle-switch"></span>
-                                            Reinvesti deduzione
+                                            <span class="help-trigger" data-help="reinvestiRisparmio">Reinvesti deduzione</span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="toggle-label" data-help="riscattoAnticipato">
+                                        <label class="toggle-label">
                                             <input type="checkbox" id="riscattoAnticipato">
                                             <span class="toggle-switch"></span>
-                                            Riscatto anticipato
+                                            <span class="help-trigger" data-help="riscattoAnticipato">Riscatto anticipato</span>
                                         </label>
                                     </div>
                                     <div class="form-group">
-                                        <label class="toggle-label" data-help="mostraDettaglio">
+                                        <label class="toggle-label">
                                             <input type="checkbox" id="mostraDettaglio" checked>
                                             <span class="toggle-switch"></span>
-                                            Mostra dettaglio
+                                            <span class="help-trigger" data-help="mostraDettaglio">Mostra dettaglio</span>
                                         </label>
                                     </div>
                                 </div>
@@ -409,12 +409,13 @@ Aliquota                12.5-20%        26%</pre>
 
                     <h3>Anno 1</h3>
 <pre>FP:  €3.450 × 1.03 = €3.554 + risparmio €690
-     Exit: €3.554 × 0.85 + €690 = €3.710
+     Tassa exit: €3.450 × 15% = €518 (solo sui contributi!)
+     Exit: €3.554 - €518 + €690 = €3.726
 
 PAC: €3.000 × 1.05 = €3.150
-     Exit: €3.150 - €39 (tasse) = €3.111
+     Exit: €3.150 - €39 (tasse su plusvalenza) = €3.111
 
-→ FP vince: €3.710 vs €3.111</pre>
+→ FP vince: €3.726 vs €3.111</pre>
 
                     <h3>Anno 2</h3>
 <pre>FP:  Montante €7.925, Exit €7.585
@@ -537,9 +538,14 @@ Orizzonte ≈ breakeven → quasi indifferente</pre>
                     </table>
 
                     <h3>Tassazione FP all'uscita</h3>
-<pre>Anni 1-15:  15%
+                    <p>La tassazione all'uscita si applica <strong>solo ai contributi versati</strong> (aderente + datore), non ai rendimenti:</p>
+<pre>Anni 1-15:  15% sui contributi
 Anno 16+:   scende 0.3%/anno
-Anno 35+:   9% (minimo)</pre>
+Anno 35+:   9% (minimo)
+
+I RENDIMENTI non vengono tassati all'uscita
+perché sono già stati tassati ogni anno (12.5-20%).</pre>
+                    <p><strong>Esempio Anno 1:</strong> versi €3.450, crescono a €3.588. La tassa 15% si applica solo su €3.450, non sui €138 di rendimento (già tassato).</p>
 
                     <h2 id="fonti">Fonti e Approfondimenti</h2>
 

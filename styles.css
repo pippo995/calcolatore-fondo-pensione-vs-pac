@@ -597,12 +597,12 @@ select.form-control::-ms-expand {
     accent-color: var(--color-accent-primary);
 }
 
-/* Help Labels - click per info */
-label[data-help] {
+/* Help trigger - click per info */
+.help-trigger {
     cursor: pointer;
 }
 
-label[data-help]:hover {
+.help-trigger:hover {
     color: var(--color-accent-primary);
 }
 
@@ -644,7 +644,7 @@ label[data-help]:hover {
     box-shadow: var(--shadow-lg);
     font-size: 0.8125rem;
     line-height: 1.5;
-    text-align: center;
+    text-align: left;
 }
 
 .help-modal-title {
