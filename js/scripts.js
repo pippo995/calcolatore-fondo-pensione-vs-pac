@@ -261,6 +261,10 @@ function setupMobileTooltips() {
     // Click su label con data-help
     document.querySelectorAll('label[data-help]').forEach(label => {
         label.addEventListener('click', function(e) {
+            // Non aprire modal se click su checkbox o toggle
+            if (e.target.tagName === 'INPUT' || e.target.classList.contains('toggle-switch')) {
+                return;
+            }
             e.preventDefault();
             const helpId = this.getAttribute('data-help');
             openModal(helpId);
