@@ -186,7 +186,7 @@ function setupMobileTooltips() {
         },
         investimento: {
             title: 'Quanto vuoi investire',
-            text: 'L\'importo che vuoi investire. In modalità cumulativa viene versato ogni anno. Ricorda: il limite di deducibilità fiscale per il FP è €5.164,57/anno (escluso TFR e contributo datore).'
+            text: 'L\'importo che vuoi investire. In modalità cumulativa viene versato ogni anno. Ricorda: il limite di deducibilità fiscale per il FP è €5.164,57/anno (incluso contributo datore, escluso TFR).'
         },
         contribuzioneDatoreFpPerc: {
             title: 'Contributo datore di lavoro',
