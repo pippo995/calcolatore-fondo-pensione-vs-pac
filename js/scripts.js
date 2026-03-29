@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inizializza toggle risultati
     setupResultsToggle();
+
+    // Inizializza tooltip mobile
+    setupMobileTooltips();
 });
 
 /**
@@ -165,4 +168,62 @@ function downloadCSV(csvContent, filename) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+/**
+ * Inizializza i tooltip per mobile (click invece di hover)
+ */
+function setupMobileTooltips() {
+    // Crea il backdrop una sola volta
+    const backdrop = document.createElement('div');
+    backdrop.className = 'tooltip-backdrop';
+    document.body.appendChild(backdrop);
+
+    // Aggiungi X a tutti i tooltip
+    document.querySelectorAll('.tooltip-text').forEach(tooltipText => {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'tooltip-close';
+        closeBtn.innerHTML = '×';
+        closeBtn.setAttribute('aria-label', 'Chiudi');
+        tooltipText.insertBefore(closeBtn, tooltipText.firstChild);
+    });
+
+    // Funzione per chiudere tooltip attivo
+    function closeActiveTooltip() {
+        document.querySelectorAll('.tooltip-text.active').forEach(t => t.classList.remove('active'));
+        backdrop.classList.remove('active');
+    }
+
+    // Click su icona tooltip
+    document.querySelectorAll('.tooltip-icon').forEach(icon => {
+        icon.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Solo su mobile (< 768px)
+            if (window.innerWidth >= 768) return;
+
+            const tooltip = this.closest('.tooltip');
+            const tooltipText = tooltip.querySelector('.tooltip-text');
+
+            // Chiudi altri tooltip aperti
+            closeActiveTooltip();
+
+            // Apri questo tooltip
+            tooltipText.classList.add('active');
+            backdrop.classList.add('active');
+        });
+    });
+
+    // Click su X chiude
+    document.querySelectorAll('.tooltip-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeActiveTooltip();
+        });
+    });
+
+    // Click su backdrop chiude
+    backdrop.addEventListener('click', closeActiveTooltip);
 }
