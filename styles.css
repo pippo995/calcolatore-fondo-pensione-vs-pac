@@ -628,6 +628,16 @@ select.form-control::-ms-expand {
     box-shadow: var(--shadow-lg);
 }
 
+/* Ponte invisibile per evitare flicker */
+.tooltip-text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 12px;
+}
+
 .tooltip:hover .tooltip-text {
     display: block;
 }
