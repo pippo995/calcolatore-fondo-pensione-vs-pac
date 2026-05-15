@@ -56,72 +56,27 @@
                             <div class="card-body">
                                 <div class="form-row">
                                     <div class="form-group full-width">
-                                        <label for="reddito">
-                                            Reddito Annuale (€)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Il tuo stipendio lordo</div>
-                                                    Serve per calcolare quanto risparmi di tasse versando nel FP e quanto versa il datore di lavoro.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="reddito" data-help="reddito">Reddito Annuale (€)</label>
                                         <input type="number" id="reddito" class="form-control" value="30000" min="0" step="1000">
                                     </div>
                                 </div>
                                 <div class="form-row" style="margin-top: 1rem;">
                                     <div class="form-group">
-                                        <label for="durata">
-                                            Durata (anni)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Durata simulazione</div>
-                                                    Per quanti anni vuoi vedere l'evoluzione dell'investimento. Più è lunga, più si vedono gli effetti dell'interesse composto.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="durata" data-help="durata">Durata (anni)</label>
                                         <input type="number" id="durata" class="form-control" value="30" min="1" max="50">
                                     </div>
                                     <div class="form-group">
-                                        <label for="investimento">
-                                            Investimento (€)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Quanto vuoi investire</div>
-                                                    L'importo che vuoi investire. In modalità cumulativa, è l'importo versato ogni anno. Il calcolatore mostra come cresce nel tempo con le diverse strategie.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="investimento" data-help="investimento">Investimento (€)</label>
                                         <input type="number" id="investimento" class="form-control" value="3000" min="0" step="100">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="contribuzioneDatoreFpPerc">
-                                            Contributo Datore (%)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Soldi gratis dall'azienda</div>
-                                                    Percentuale del tuo reddito che l'azienda versa nel tuo FP. Controlla il tuo contratto o chiedi all'HR.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="contribuzioneDatoreFpPerc" data-help="contribuzioneDatoreFpPerc">Contributo Datore (%)</label>
                                         <input type="number" id="contribuzioneDatoreFpPerc" class="form-control" value="1.5" min="0" max="100" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="quotaMinAderentePerc">
-                                            Quota Aderente (%)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Quanto devi versare tu</div>
-                                                    Percentuale minima del tuo reddito che devi versare per sbloccare il contributo del datore.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="quotaMinAderentePerc" data-help="quotaMinAderentePerc">Quota Aderente (%)</label>
                                         <input type="number" id="quotaMinAderentePerc" class="form-control" value="1" min="0" max="100" step="0.1">
                                     </div>
                                 </div>
@@ -141,16 +96,7 @@
                             <div class="card-body">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="compartoFp">
-                                            Comparto FP
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Tipo di comparto</div>
-                                                    Determina il rendimento atteso. I rendimenti sono già al netto della tassazione annuale (12.5-20%) come pubblicati da COVIP.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="compartoFp" data-help="compartoFp">Comparto FP</label>
                                         <select id="compartoFp" class="form-control">
                                             <option value="dinamico" selected>Dinamico (~4%)</option>
                                             <option value="bilanciato">Bilanciato (~3%)</option>
@@ -160,16 +106,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="etfPreset">
-                                            ETF PAC
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Tipo di ETF</div>
-                                                    Seleziona un ETF comune o inserisci un rendimento personalizzato. Rendimenti basati su medie storiche ~10 anni.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="etfPreset" data-help="etfPreset">ETF PAC</label>
                                         <select id="etfPreset" class="form-control">
                                             <option value="msciWorld" selected>MSCI World (~8%)</option>
                                             <option value="ftseAllWorld">FTSE All-World (~7%)</option>
@@ -183,93 +120,43 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="rendimentoAnnualeFpPerc">
-                                            Rendimento FP (%)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Quanto rende il FP</div>
-                                                    Rendimento annuo atteso del fondo pensione. Dati storici COVIP: 3-5% per fondi bilanciati.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="rendimentoAnnualeFpPerc" data-help="rendimentoAnnualeFpPerc">Rendimento FP (%)</label>
                                         <input type="number" id="rendimentoAnnualeFpPerc" class="form-control" value="4" min="0" max="20" step="0.1">
                                     </div>
                                     <div class="form-group">
-                                        <label for="rendimentoAnnualePacPerc">
-                                            Rendimento PAC (%)
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Quanto rendono gli ETF</div>
-                                                    Rendimento annuo atteso degli ETF. L'MSCI World (azioni globali) ha reso storicamente ~7-8%.
-                                                </span>
-                                            </span>
-                                        </label>
+                                        <label for="rendimentoAnnualePacPerc" data-help="rendimentoAnnualePacPerc">Rendimento PAC (%)</label>
                                         <input type="number" id="rendimentoAnnualePacPerc" class="form-control" value="8" min="0" max="20" step="0.1">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="toggle-label">
+                                        <label class="toggle-label" data-help="modalitaCumulativa">
                                             <input type="checkbox" id="modalitaCumulativa" checked>
                                             <span class="toggle-switch"></span>
                                             Cumulativo
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Modalità cumulativa</div>
-                                                    <strong>Sì:</strong> versi la quota ogni anno e vedi l'accumulo totale.<br>
-                                                    <strong>No:</strong> vedi l'evoluzione di un singolo versamento nel tempo.
-                                                </span>
-                                            </span>
                                         </label>
                                     </div>
                                     <div class="form-group">
-                                        <label class="toggle-label">
+                                        <label class="toggle-label" data-help="reinvestiRisparmio">
                                             <input type="checkbox" id="reinvestiRisparmio" checked>
                                             <span class="toggle-switch"></span>
                                             Reinvesti deduzione
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Reinvesti risparmio fiscale</div>
-                                                    <strong>Sì:</strong> il risparmio IRPEF viene reinvestito nel FP l'anno dopo.<br>
-                                                    <strong>No:</strong> tenuto da parte e sommato alla fine.
-                                                </span>
-                                            </span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="toggle-label">
+                                        <label class="toggle-label" data-help="riscattoAnticipato">
                                             <input type="checkbox" id="riscattoAnticipato">
                                             <span class="toggle-switch"></span>
                                             Riscatto anticipato
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Riscatto totale anticipato</div>
-                                                    <strong>Sì:</strong> i versamenti FP saranno tassati al 23% fisso.<br>
-                                                    <strong>No:</strong> tassazione normale 15% → 9%.
-                                                </span>
-                                            </span>
                                         </label>
                                     </div>
                                     <div class="form-group">
-                                        <label class="toggle-label">
+                                        <label class="toggle-label" data-help="mostraDettaglio">
                                             <input type="checkbox" id="mostraDettaglio" checked>
                                             <span class="toggle-switch"></span>
                                             Mostra dettaglio
-                                            <span class="tooltip">
-                                                <span class="tooltip-icon">?</span>
-                                                <span class="tooltip-text">
-                                                    <div class="tooltip-title">Dettaglio tabella</div>
-                                                    <strong>Sì:</strong> mostra tutte le colonne nella tabella.<br>
-                                                    <strong>No:</strong> mostra solo Anno e i valori Exit.
-                                                </span>
-                                            </span>
                                         </label>
                                     </div>
                                 </div>
