@@ -130,7 +130,7 @@
 
 html {
     scroll-behavior: smooth;
-    overflow-x: auto;
+    overflow-x: hidden;
 }
 
 body {
@@ -140,8 +140,7 @@ body {
     color: var(--color-text-primary);
     background-color: var(--color-bg-page);
     min-height: 100vh;
-    min-width: 345px;
-    overflow-x: visible;
+    overflow-x: hidden;
 }
 
 /* ============================================
