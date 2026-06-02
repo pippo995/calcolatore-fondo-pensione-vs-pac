@@ -236,7 +236,6 @@ function setupMobileTooltips() {
     modal.innerHTML = `
         <div class="help-modal-backdrop"></div>
         <div class="help-modal-content">
-            <button class="help-modal-close">×</button>
             <div class="help-modal-title"></div>
             <div class="help-modal-text"></div>
         </div>
@@ -268,8 +267,7 @@ function setupMobileTooltips() {
         });
     });
 
-    // Chiudi modal
-    modal.querySelector('.help-modal-close').addEventListener('click', closeModal);
+    // Chiudi modal cliccando fuori
     modal.querySelector('.help-modal-backdrop').addEventListener('click', closeModal);
 
     // Chiudi con ESC
