@@ -129,15 +129,15 @@ function setupMobileTooltips() {
     const helpContent = {
         reddito: {
             title: 'Il tuo stipendio lordo',
-            text: 'Il tuo Reddito Annuo Lordo (RAL). Serve per calcolare: 1) quanto risparmi di IRPEF versando nel fondo pensione (aliquota marginale 23-43%), 2) quanto versa il datore di lavoro come contributo aggiuntivo.'
+            text: 'Il tuo Reddito Annuo Lordo (RAL) da lavoratore dipendente. Il modello usa contributi INPS stimati, detrazioni da lavoro dipendente e possibile contributo del datore. Non è pensato per autonomi, partite IVA o regimi sostitutivi.'
         },
         durata: {
             title: 'Durata simulazione',
             text: 'Per quanti anni vuoi simulare l\'investimento. Più è lunga la durata, più si vedono gli effetti dell\'interesse composto. La tassazione FP scende dal 15% al 9% dopo 15 anni di partecipazione.'
         },
         investimento: {
-            title: 'Quanto vuoi investire',
-            text: 'L\'importo che vuoi investire volontariamente ogni anno. Non include il TFR. In modalità cumulativa viene versato ogni anno. Ricorda: il limite di deducibilità fiscale per il FP è €5.164,57/anno (incluso contributo datore, escluso TFR).'
+            title: 'Budget annuo',
+            text: 'L\'importo che vuoi allocare ogni anno tra fondo pensione e PAC. La quota oltre il limite deducibile viene considerata sempre PAC. Non include il TFR. Ricorda: il limite di deducibilità fiscale per il FP è €5.164,57/anno (incluso contributo datore, escluso TFR).'
         },
         contribuzioneDatoreFpPerc: {
             title: 'Contributo datore di lavoro',
@@ -155,10 +155,6 @@ function setupMobileTooltips() {
             title: 'Ulteriori detrazioni',
             text: 'Importo annuo di altri bonus o detrazioni fiscali che riducono l’imposta netta. Non sono deduzioni: non abbassano il reddito imponibile, ma l’imposta da pagare.'
         },
-        scenarioRendimento: {
-            title: 'Scenario rendimenti',
-            text: 'Imposta rapidamente coppie coerenti di rendimento FP/PAC. Prudente usa rendimenti bassi, Centrale usa i default della guida, Aggressivo aumenta il differenziale a favore del PAC. Scegli Personalizzato per modificare manualmente.'
-        },
         compartoFp: {
             title: 'Comparto del fondo pensione',
             text: 'Il comparto determina come vengono investiti i tuoi soldi. Garantito: più prudente, basso rendimento atteso. Obbligazionario: principalmente bond. Bilanciato: mix azioni/bond. Azionario: più rischioso ma rendimento atteso maggiore. I valori sono ipotesi ispirate a dati storici, non garanzie.'
@@ -169,27 +165,15 @@ function setupMobileTooltips() {
         },
         rendimentoAnnualeFpPerc: {
             title: 'Rendimento fondo pensione ipotizzato',
-            text: 'Rendimento annuo usato nella simulazione FP. Il modello lo considera già netto dalla tassazione annuale dei rendimenti. Prova più valori: questo input influenza molto il breakeven.'
+            text: 'Rendimento annuo usato nella simulazione FP. Il modello lo considera già netto dalla tassazione annuale dei rendimenti. Prova più valori: questo input influenza molto il mix consigliato.'
         },
         rendimentoAnnualePacPerc: {
             title: 'Rendimento ETF ipotizzato',
             text: 'Rendimento annuo usato nella simulazione PAC. Il modello tassa le plusvalenze al 26% solo all’uscita. Non è una previsione: rendimenti più bassi o più alti cambiano molto il risultato finale.'
         },
-        modalitaCumulativa: {
-            title: 'Modalità cumulativa',
-            text: 'Cumulativo ON: versi l\'importo ogni anno e vedi l\'accumulo totale nel tempo (scenario realistico di un PAC). Cumulativo OFF: simula un singolo versamento e la sua evoluzione, utile per capire l\'effetto del rendimento composto.'
-        },
-        reinvestiRisparmio: {
-            title: 'Reinvesti risparmio fiscale',
-            text: 'Reinvesti ON: il risparmio IRPEF ottenuto dalla deduzione viene reinvestito nel FP l\'anno successivo, massimizzando l\'effetto composto. Reinvesti OFF: il risparmio viene tenuto da parte e sommato al valore finale.'
-        },
         riscattoAnticipato: {
             title: 'Riscatto anticipato',
-            text: 'Se prevedi di riscattare tutto il FP prima della pensione (es. per acquisto casa, spese sanitarie), la tassazione è fissa al 23%. Altrimenti, a scadenza la tassazione è 15% e scende dello 0.3%/anno fino al 9% dopo 35 anni.'
-        },
-        mostraDettaglio: {
-            title: 'Mostra dettaglio tabella',
-            text: 'Dettaglio ON: mostra tutte le colonne intermedie (versato, rendimento, tasse, contributo datore, ecc.). Dettaglio OFF: mostra solo Anno e i valori Exit finali per una vista più compatta.'
+            text: 'Simula un riscatto totale anticipato con tassazione al 23%. Non è la stessa cosa delle anticipazioni parziali per sanità, casa o ulteriori esigenze. Se OFF, usa la tassazione ordinaria 15% che scende fino al 9%.'
         }
     };
 

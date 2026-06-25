@@ -61,7 +61,7 @@
                                         <input type="number" id="durata" class="form-control" value="30" min="1" max="50">
                                     </div>
                                     <div class="form-group">
-                                        <label for="investimento"><span class="help-trigger" data-help="investimento">Investimento (€)</span></label>
+                                        <label for="investimento"><span class="help-trigger" data-help="investimento">Budget annuo (€)</span></label>
                                         <input type="number" id="investimento" class="form-control" value="3000" min="0" step="100">
                                     </div>
                                 </div>
@@ -90,8 +90,12 @@
                                     <span>Per ottenere il contributo datore devi investire almeno <strong id="min-investimento-display">300 €</strong>/anno</span>
                                 </div>
                                 <div class="info-box">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>Il modello è pensato per un lavoratore dipendente: usa RAL, contributi INPS stimati, detrazioni da lavoro dipendente e possibile contributo datore.</span>
+                                </div>
+                                <div class="info-box">
                                     <i class="fas fa-circle-exclamation"></i>
-                                    <span>Il calcolo non include il TFR: confronta solo contributi volontari, contributo datore, deduzione fiscale e rendimento.</span>
+                                    <span>Il calcolo non include il TFR: assume che l'adesione al FP sia già gestita e confronta solo il budget annuo aggiuntivo tra contributi volontari, contributo datore, deduzione fiscale e PAC.</span>
                                 </div>
                             </div>
                         </div>
@@ -103,17 +107,6 @@
                                 Rendimenti e Opzioni
                             </div>
                             <div class="card-body">
-                                <div class="form-row">
-                                    <div class="form-group full-width">
-                                        <label for="scenarioRendimento"><span class="help-trigger" data-help="scenarioRendimento">Scenario rendimenti</span></label>
-                                        <select id="scenarioRendimento" class="form-control">
-                                            <option value="centrale" selected>Centrale: FP 4%, PAC 8%</option>
-                                            <option value="prudente">Prudente: FP 2%, PAC 4%</option>
-                                            <option value="aggressivo">Aggressivo: FP 5%, PAC 10%</option>
-                                            <option value="custom">Personalizzato</option>
-                                        </select>
-                                    </div>
-                                </div>
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="compartoFp"><span class="help-trigger" data-help="compartoFp">Comparto FP</span></label>
@@ -156,32 +149,9 @@
                                 <div class="form-row options-row">
                                     <div class="form-group">
                                         <label class="toggle-label">
-                                            <input type="checkbox" id="modalitaCumulativa" checked>
-                                            <span class="toggle-switch"></span>
-                                            <span class="help-trigger" data-help="modalitaCumulativa">Cumulativo</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="toggle-label">
-                                            <input type="checkbox" id="reinvestiRisparmio" checked>
-                                            <span class="toggle-switch"></span>
-                                            <span class="help-trigger" data-help="reinvestiRisparmio">Reinvesti deduzione</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="toggle-label">
                                             <input type="checkbox" id="riscattoAnticipato">
                                             <span class="toggle-switch"></span>
                                             <span class="help-trigger" data-help="riscattoAnticipato">Riscatto anticipato</span>
-                                        </label>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="toggle-label">
-                                            <input type="checkbox" id="mostraDettaglio" checked>
-                                            <span class="toggle-switch"></span>
-                                            <span class="help-trigger" data-help="mostraDettaglio">Mostra dettaglio</span>
                                         </label>
                                     </div>
                                 </div>
@@ -195,26 +165,26 @@
                 <div class="metrics-dashboard">
                     <div class="metric-card metric-fp">
                         <div class="metric-badge" style="display: none;">Migliore</div>
-                        <div class="metric-label">Exit Fondo Pensione</div>
+                        <div class="metric-label">FP deducibile</div>
                         <div class="metric-value" id="metric-fp-value">-</div>
-                        <div class="metric-subtitle">Solo FP</div>
+                        <div class="metric-subtitle">FP entro deduzione + PAC extra</div>
                     </div>
                     <div class="metric-card metric-pac">
                         <div class="metric-badge" style="display: none;">Migliore</div>
-                        <div class="metric-label">Exit PAC</div>
+                        <div class="metric-label">Tutto PAC</div>
                         <div class="metric-value" id="metric-pac-value">-</div>
-                        <div class="metric-subtitle">Solo PAC</div>
+                        <div class="metric-subtitle">Budget interamente in ETF</div>
                     </div>
                     <div class="metric-card metric-mix">
                         <div class="metric-badge" style="display: none;">Migliore</div>
-                        <div class="metric-label">Exit Mix</div>
+                        <div class="metric-label">Mix consigliato</div>
                         <div class="metric-value" id="metric-mix-value">-</div>
-                        <div class="metric-subtitle">FP fino deduzione + PAC</div>
+                        <div class="metric-subtitle">Migliore tra FP, PAC e split</div>
                     </div>
-                    <div class="metric-card metric-breakeven">
-                        <div class="metric-label">Breakeven</div>
-                        <div class="metric-value" id="metric-breakeven-value">-</div>
-                        <div class="metric-subtitle" id="metric-breakeven-subtitle">Quando il PAC supera il FP</div>
+                    <div class="metric-card metric-sequence">
+                        <div class="metric-label">Sequenza mix</div>
+                        <div class="metric-value metric-value-compact" id="metric-sequence-value">-</div>
+                        <div class="metric-subtitle" id="metric-sequence-subtitle">Intervalli consigliati per anno</div>
                     </div>
                 </div>
 
@@ -225,17 +195,35 @@
                         <i class="fas fa-table"></i> Risultati della Simulazione
                     </h3>
                     <div class="results-content">
-                    <div class="table-container">
-                        <div id="grid-div">
-                            <!-- Table inserted by JavaScript -->
+                        <div class="table-view-tabs" aria-label="Vista risultati">
+                            <button type="button" class="table-view-tab" data-table-view="fp">
+                                <i class="fas fa-piggy-bank"></i>
+                                FP
+                            </button>
+                            <button type="button" class="table-view-tab" data-table-view="pac">
+                                <i class="fas fa-chart-line"></i>
+                                PAC
+                            </button>
+                            <button type="button" class="table-view-tab active" data-table-view="mix">
+                                <i class="fas fa-route"></i>
+                                MIX
+                            </button>
+                            <button type="button" class="table-view-tab" data-table-view="comparison">
+                                <i class="fas fa-scale-balanced"></i>
+                                CONFRONTO
+                            </button>
                         </div>
-                    </div>
-                    <div class="action-buttons">
-                        <button id="download-csv" class="btn btn-primary">
-                            <i class="fas fa-download"></i>
-                            Scarica CSV
-                        </button>
-                    </div>
+                        <div class="table-container">
+                            <div id="grid-div">
+                                <!-- Table inserted by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="download-csv" class="btn btn-primary">
+                                <i class="fas fa-download"></i>
+                                Scarica CSV
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -251,7 +239,7 @@
                         </div>
                         <div class="info-box" style="margin-top: 1rem;">
                             <i class="fas fa-info-circle"></i>
-                            <span>Se investi sempre entro il limite di deduzione, <strong>Exit FP = Exit Mix</strong> (le linee si sovrappongono). Clicca sulla legenda per nascondere una linea.</span>
+                            <span>Il mix sceglie il migliore tra FP deducibile, tutto PAC e split ottimizzato. La quota oltre deduzione va sempre nel PAC.</span>
                         </div>
                     </div>
                 </div>
@@ -262,9 +250,24 @@
             <div class="tab-content" id="documentation-content">
                 <div class="docs-section">
 
-                    <p><strong>Indice:</strong> <a href="#introduction">Il problema</a> · <a href="#tfr-escluso">TFR escluso</a> · <a href="#step1">Vantaggi FP</a> · <a href="#step2">Vantaggi ETF</a> · <a href="#step3">Confronto</a> · <a href="#step4">Simulazione</a> · <a href="#options">Opzioni</a> · <a href="#results">Risultati</a> · <a href="#fonti">Fonti</a></p>
+                    <nav class="docs-index" aria-label="Indice guida">
+                        <strong>Indice</strong>
+                        <a href="#introduction">Il problema</a>
+                        <a href="#tfr-escluso">TFR escluso</a>
+                        <a href="#step1">Vantaggi FP</a>
+                        <a href="#step2">Vantaggi ETF</a>
+                        <a href="#step3">Confronto</a>
+                        <a href="#step4">Simulazione</a>
+                        <a href="#options">Opzioni</a>
+                        <a href="#results">Risultati</a>
+                        <a href="#fonti">Fonti</a>
+                    </nav>
 
                     <h2 id="introduction">Il problema: FP o PAC?</h2>
+
+                    <div class="highlight">
+                        <strong>Assunzione principale:</strong> il calcolatore è costruito per un <strong>lavoratore dipendente</strong>. Usa RAL, contributi INPS stimati, detrazioni da lavoro dipendente, addizionali e possibile contributo del datore. Non è pensato per lavoratori autonomi, partite IVA, regimi sostitutivi o situazioni senza datore di lavoro.
+                    </div>
 
                     <p>Vuoi investire per il futuro. Hai due opzioni:</p>
                     <ul>
@@ -272,11 +275,16 @@
                         <li><strong>PAC in ETF</strong> — investimento diretto sul mercato, massima flessibilità</li>
                     </ul>
 
-                    <p><strong>La domanda:</strong> i vantaggi fiscali del FP battono i rendimenti potenzialmente più alti dell'ETF?</p>
+                    <p><strong>La domanda:</strong> per ogni anno, la quota deducibile conviene nel FP o nel PAC dato l'orizzonte residuo?</p>
+
+                    <div class="highlight">
+                        <strong>Regola chiave del calcolatore:</strong> la quota oltre il limite deducibile non viene mai consigliata nel FP. Va sempre nel PAC, perché fuori deduzione il fondo pensione perde il suo vantaggio principale.
+                    </div>
 
                     <h2 id="tfr-escluso">Cosa non include: il TFR</h2>
 
-                    <p>Questo calcolatore <strong>non include il TFR</strong>. Il confronto è intenzionalmente limitato ai soldi che decidi di investire ogni anno:</p>
+                    <p>Questo calcolatore <strong>non include il TFR</strong>. Parte dal presupposto che tu abbia già accesso al fondo pensione e possa fare versamenti volontari. Quindi l'adesione al fondo e l'eventuale scelta di destinare il TFR al fondo sono considerate decisioni già fatte a monte, non parte della simulazione.</p>
+                    <p>Il confronto è intenzionalmente limitato ai soldi che decidi di investire ogni anno in aggiunta al TFR:</p>
                     <ul>
                         <li>versamento volontario nel fondo pensione;</li>
                         <li>eventuale contributo del datore;</li>
@@ -287,7 +295,9 @@
 
                     <p>Il TFR è escluso perché ha una logica diversa: matura in base alla retribuzione, può restare in azienda o essere destinato al fondo pensione, segue una rivalutazione legale se resta fuori dal FP e ha una tassazione separata. Mescolarlo nello stesso calcolo renderebbe il confronto meno leggibile.</p>
 
-                    <p><strong>Quindi questo strumento risponde a questa domanda:</strong> “dato un importo annuo che voglio investire, conviene metterlo nel fondo pensione o in un PAC?”. Non risponde ancora alla domanda completa: “conviene destinare anche il TFR al fondo pensione?”.</p>
+                    <p>In pratica: se per il tuo fondo o contratto il versamento volontario, il contributo datore o entrambi richiedono l'adesione con TFR al fondo, questo calcolatore assume che quel passaggio sia già avvenuto. Qui si decide solo come allocare il budget annuo aggiuntivo tra FP e PAC.</p>
+
+                    <p><strong>Quindi questo strumento risponde a questa domanda:</strong> “dato un budget annuo, quanta parte deducibile conviene mettere nel fondo pensione e quanta nel PAC?”. Non risponde ancora alla domanda completa: “conviene destinare anche il TFR al fondo pensione?”.</p>
 
                     <h3>Glossario</h3>
                     <table>
@@ -301,7 +311,7 @@
                         </tr>
                         <tr>
                             <td><strong>PAC</strong></td>
-                            <td>Piano di Accumulo del Capitale. Strategia: versi una quota fissa ogni mese.</td>
+                            <td>Piano di Accumulo del Capitale. Metodo: versi una quota fissa ogni mese.</td>
                         </tr>
                         <tr>
                             <td><strong>ETF</strong></td>
@@ -343,8 +353,8 @@
                         </tr>
                     </table>
 
-                    <h3>Uscite anticipate dal FP</h3>
-                    <p>Il capitale è bloccato fino alla pensione, ma esistono eccezioni:</p>
+                    <h3>Anticipazioni dal FP</h3>
+                    <p>Il capitale è bloccato fino alla pensione, ma puoi chiedere anticipazioni in alcuni casi:</p>
                     <table>
                         <tr>
                             <th>Motivo</th>
@@ -411,13 +421,14 @@ Risparmio fiscale stimato anno 1: ~€960</pre>
 - Datore:      €450
 = Per te:      €4.714</pre>
 
-                    <h3>Totale vantaggi FP (anno 1)</h3>
+                    <h3>Vantaggi FP e reinvestimento</h3>
 <pre>Mario versa nel FP:          €3.000
 + Datore:                   €450
 + Risparmio fiscale stimato: €960
-= Vantaggio iniziale lordo:  €4.410</pre>
+= Liquidità/valore generato: €4.410</pre>
 
-                    <p>Il risparmio fiscale non entra automaticamente nel fondo nello stesso anno. Con l'opzione "Reinvesti deduzione", il calcolatore lo reinveste dall'anno successivo.</p>
+                    <p><strong>Importante:</strong> il risparmio fiscale non va letto come “soldi regalati” da sommare e basta al risultato finale. È liquidità che ricevi grazie alla deduzione e che, per fare un confronto corretto con il PAC, deve essere trattata come capitale da reinvestire.</p>
+                    <p>Il calcolatore assume quindi che il risparmio fiscale venga reinvestito dall'anno successivo. In questo modo FP e PAC sono confrontati in modo coerente: i rendimenti del PAC restano investiti nel PAC, e anche il beneficio fiscale del FP continua a lavorare nel tempo invece di restare fermo fuori dal calcolo.</p>
 
                     <h2 id="step2">Step 2: I vantaggi dell'ETF</h2>
 
@@ -458,96 +469,110 @@ Aliquota                12.5-20%        26%</pre>
                     <h2 id="step4">Step 4: Simulazione anno per anno</h2>
 
                     <p>Questa simulazione usa i parametri default del calcolatore: FP 4%, PAC 8%, addizionali stimate 2%, reinvestimento della deduzione attivo. È uno scenario centrale, non una previsione.</p>
+                    <p>Il mix consigliato guarda ogni euro con il suo orizzonte residuo: se mancano molti anni può preferire PAC, se mancano pochi anni può preferire FP perché il vantaggio fiscale pesa di più. Può anche dividere la quota deducibile: per esempio minimo nel FP per prendere il contributo datore, resto nel PAC. Alla fine confronta lo split con gli scenari puri e tiene il migliore sull'orizzonte scelto.</p>
 
                     <h3>Anno 1</h3>
-<pre>FP:
-Versamento Mario:          €3.000
-+ Datore:                  €450
-= Capitale versato FP:     €3.450
-Crescita al 4%:            €3.588
-Risparmio fiscale stimato: €960
-Exit netto stimato:        €4.030
+<pre>Orizzonte residuo: 30 anni
+Quota deducibile: €3.000
+Scelta consigliata: MIX
+Quota FP: €300
+Quota PAC: €2.700
 
-PAC:
-Versamento:                €3.000
-Crescita all'8%:           €3.240
-Tassa 26% sulla plusvalenza
-Exit netto stimato:        €3.178
-
-→ FP vince: €4.030 vs €3.178</pre>
+Exit FP deducibile:       €4.030
+Exit tutto PAC:           €3.178
+Mix consigliato:          €3.630</pre>
 
                     <h3>Anno 2</h3>
 <pre>FP:  Exit €8.426
 PAC: Exit €6.547
+Mix consigliato: €7.469
 
-→ FP vince: €8.426 vs €6.547</pre>
+→ Il mix prende il contributo datore e mette il resto nel PAC</pre>
 
                     <h3>Anno 3</h3>
 <pre>FP:  Exit €13.087
 PAC: Exit €10.124
+Mix consigliato: €11.535
 
-→ FP vince: €13.087 vs €10.124</pre>
+→ La quota deducibile resta divisa tra FP e PAC</pre>
 
                     <h3>Anno 15</h3>
 <pre>FP:  Exit €89.033
 PAC: Exit €76.800
+Mix consigliato: €85.509
 
-→ FP vince ancora, ma il gap si riduce</pre>
+→ Il contributo datore rende utile una quota minima nel FP</pre>
 
                     <h3>Anno 20</h3>
 <pre>FP:  Exit €135.729
 PAC: Exit €125.319
+Mix consigliato: €137.991
 
-→ FP è ancora avanti</pre>
+→ Ultimi anni di MIX prima del passaggio a FP</pre>
+
+                    <h3>Anno 24</h3>
+<pre>Quota deducibile: €3.102
+Quota FP: €2.243
+Quota PAC: €859
+
+→ La parte FP cresce: il vantaggio fiscale pesa di più</pre>
 
                     <h3>Anno 25</h3>
 <pre>FP:  Exit €193.762
 PAC: Exit €194.779
+Mix consigliato: €212.769
+Quota FP: €3.766
+Quota PAC: €0
 
-→ PAC supera FP: questo è il breakeven</pre>
+→ Da qui tutta la quota deducibile va nel FP</pre>
 
                     <h3>Anno 30</h3>
 <pre>FP:  Exit €265.432
 PAC: Exit €295.008
+Mix consigliato: €321.083
 
-→ PAC vince grazie al rendimento composto più alto</pre>
+→ PAC ha vinto sulle quote iniziali, FP sulle quote finali</pre>
 
-                    <p>Dopo il breakeven (~25 anni in questo scenario), il PAC supera il FP grazie al rendimento più alto e alla tassazione differita.</p>
+                    <p>In questo scenario il PAC supera lo scenario FP-deducibile intorno all'anno 25, ma il mix resta più alto perché non ragiona per blocchi: usa FP, PAC o uno split in base al valore atteso di ogni quota.</p>
 
                     <h3>Quanto contano le ipotesi di rendimento</h3>
-                    <p>Il breakeven cambia molto se modifichi i rendimenti. Con gli stessi dati di Mario, ma cambiando solo FP e PAC:</p>
+                    <p>La sequenza del mix cambia molto se modifichi i rendimenti. Con gli stessi dati di Mario, ma cambiando solo FP e PAC:</p>
                     <table>
                         <tr>
                             <th>Scenario</th>
                             <th>FP</th>
                             <th>PAC</th>
-                            <th>Breakeven</th>
+                            <th>Sequenza mix</th>
                             <th>Exit FP 30 anni</th>
                             <th>Exit PAC 30 anni</th>
+                            <th>Mix 30 anni</th>
                         </tr>
                         <tr>
                             <td>Conservativo</td>
                             <td>2%</td>
                             <td>4%</td>
-                            <td>PAC non supera entro 30 anni</td>
+                            <td>1-30 FP</td>
                             <td>€185.327</td>
                             <td>€152.889</td>
+                            <td>€185.327</td>
                         </tr>
                         <tr>
                             <td>Centrale</td>
                             <td>4%</td>
                             <td>8%</td>
-                            <td>25 anni</td>
+                            <td>1-24 MIX · 25-30 FP</td>
                             <td>€265.432</td>
                             <td>€295.008</td>
+                            <td>€321.083</td>
                         </tr>
                         <tr>
                             <td>Ottimistico PAC</td>
                             <td>5%</td>
                             <td>10%</td>
-                            <td>20 anni</td>
+                            <td>1-5 PAC · 6-26 MIX · 27-30 FP</td>
                             <td>€319.238</td>
                             <td>€425.094</td>
+                            <td>€446.112</td>
                         </tr>
                     </table>
                     <p>Questa tabella serve a leggere il risultato nel modo giusto: il calcolatore confronta scenari coerenti, ma non stabilisce quale rendimento si realizzerà davvero.</p>
@@ -572,37 +597,21 @@ A 55 anni, orizzonte 10 anni:
 
                     <h2 id="options">Le opzioni del calcolatore</h2>
 
-                    <h3>Scenario rendimenti</h3>
-                    <ul>
-                        <li><strong>Prudente:</strong> usa rendimenti bassi per FP e PAC.</li>
-                        <li><strong>Centrale:</strong> usa i parametri della guida, FP 4% e PAC 8%.</li>
-                        <li><strong>Aggressivo:</strong> aumenta il rendimento ipotizzato del PAC e mostra uno scenario più favorevole all'azionario.</li>
-                        <li><strong>Personalizzato:</strong> si attiva quando modifichi manualmente comparto, ETF o rendimenti.</li>
-                    </ul>
+                    <h3>Rendimenti</h3>
+                    <p>Scegli un comparto FP e un ETF PAC per usare valori predefiniti, oppure seleziona Personalizzato e inserisci manualmente i rendimenti ipotizzati. Sono ipotesi di simulazione, non previsioni.</p>
 
-                    <h3>Modalità cumulativa</h3>
+                    <h3>Assunzioni fisse</h3>
                     <ul>
-                        <li><strong>Sì (default):</strong> versi la quota ogni anno e vedi l'accumulo totale</li>
-                        <li><strong>No:</strong> evoluzione di un singolo versamento nel tempo</li>
+                        <li><strong>Calcolo cumulativo:</strong> il budget annuo viene versato ogni anno per tutta la durata della simulazione.</li>
+                        <li><strong>Reinvestimento deduzione:</strong> il risparmio fiscale stimato viene reinvestito l'anno successivo. Non è trattato come bonus gratuito separato: è capitale generato dalla deduzione che deve restare investito per non falsare il confronto con il PAC.</li>
                     </ul>
-<pre>Consiglio: usa "Sì" per una stima del montante finale.
-Usa "No" per decidere dove mettere i soldi di quest'anno.</pre>
-
-                    <h3>Reinvesti deduzione</h3>
-                    <ul>
-                        <li><strong>Sì (default):</strong> il risparmio fiscale stimato viene reinvestito nel FP l'anno dopo → interesse composto</li>
-                        <li><strong>No:</strong> il risparmio resta sul tuo conto e viene sommato alla fine → più liquidità, meno rendimento</li>
-                    </ul>
-<pre>Con reinvestimento (30 anni): Exit FP ~€265.432
-Senza reinvestimento:         Exit FP ~€219.154
-Differenza stimata:           ~€46.278</pre>
 
                     <h3>Riscatto anticipato</h3>
                     <ul>
                         <li><strong>No (default):</strong> tassazione FP normale, dal 15% fino al 9% dopo 35 anni</li>
                         <li><strong>Sì:</strong> simula un riscatto anticipato totale con tassazione fissa al 23%</li>
                     </ul>
-                    <p>Il riscatto anticipato si applica quando ritiri il capitale prima della pensione per motivi non sanitari (es. acquisto casa, altre esigenze). In questi casi la tassazione è sempre 23%, senza la riduzione graduale.</p>
+                    <p>Nel calcolatore questa opzione non simula le anticipazioni parziali per sanità, casa o ulteriori esigenze. Serve solo a simulare un'uscita totale anticipata tassata al 23%, cioè un caso più penalizzante rispetto alla tassazione ordinaria 15%→9%.</p>
 
                     <h3>Addizionali e altre detrazioni</h3>
                     <ul>
@@ -611,18 +620,20 @@ Differenza stimata:           ~€46.278</pre>
                     </ul>
                     <p>Questi campi servono a rendere la stima più realistica senza mantenere un database aggiornato di aliquote locali e casi fiscali personali.</p>
 
-                    <h3>Mostra dettaglio</h3>
+                    <h3>Viste tabella</h3>
                     <ul>
-                        <li><strong>Sì (default):</strong> mostra tutte le colonne nella tabella dei risultati</li>
-                        <li><strong>No:</strong> mostra solo Anno e i valori Exit (FP, PAC, Mix)</li>
+                        <li><strong>FP:</strong> mostra lo scenario FP deducibile: quota nel fondo, eventuale quota PAC extra, contributo datore, risparmio fiscale ed exit FP.</li>
+                        <li><strong>PAC:</strong> mostra lo scenario tutto PAC: budget investito nel PAC ed exit PAC.</li>
+                        <li><strong>MIX:</strong> mostra cosa fare ogni anno: quota FP, quota PAC, contributo datore, risparmio fiscale ed exit del mix.</li>
+                        <li><strong>CONFRONTO:</strong> separa gli scenari puri: FP deducibile, tutto PAC e mix consigliato.</li>
                     </ul>
 
-                    <h3>Le 3 strategie</h3>
+                    <h3>Le 3 letture del risultato</h3>
                     <table>
-                        <tr><th>Strategia</th><th>Descrizione</th></tr>
-                        <tr><td>Solo FP</td><td>Tutto nel fondo pensione</td></tr>
-                        <tr><td>Solo PAC</td><td>Tutto in ETF</td></tr>
-                        <tr><td>Mix</td><td>FP fino al limite deducibile, resto in PAC</td></tr>
+                        <tr><th>Voce</th><th>Descrizione</th></tr>
+                        <tr><td>FP deducibile</td><td>Quota entro deduzione nel FP, quota oltre deduzione sempre PAC</td></tr>
+                        <tr><td>Tutto PAC</td><td>Tutto il budget nel PAC ETF</td></tr>
+                        <tr><td>Mix consigliato</td><td>Migliore tra FP deducibile, tutto PAC e split ottimizzato; l'eccedenza resta PAC</td></tr>
                     </table>
 
                     <h2 id="results">Come leggere i risultati</h2>
@@ -630,17 +641,18 @@ Differenza stimata:           ~€46.278</pre>
                     <h3>Le 4 card</h3>
                     <table>
                         <tr><th>Card</th><th>Significato</th></tr>
-                        <tr><td>Exit FP</td><td>Netto finale con solo Fondo Pensione</td></tr>
-                        <tr><td>Exit PAC</td><td>Netto finale con solo ETF</td></tr>
-                        <tr><td>Exit Mix</td><td>Netto finale con strategia mista</td></tr>
-                        <tr><td>Breakeven</td><td>Anni necessari perché l'ETF superi il FP</td></tr>
+                        <tr><td>FP deducibile</td><td>Netto finale mettendo nel FP solo la quota deducibile e nel PAC l'eventuale eccedenza</td></tr>
+                        <tr><td>Tutto PAC</td><td>Netto finale mettendo tutto il budget nel PAC</td></tr>
+                        <tr><td>Mix consigliato</td><td>Netto finale dell'allocazione anno per anno consigliata</td></tr>
+                        <tr><td>Sequenza mix</td><td>Intervalli di anni in cui il mix sceglie PAC, FP o MIX</td></tr>
                     </table>
 
-                    <h3>Breakeven</h3>
-                    <p>È l'orizzonte minimo oltre il quale l'ETF supera il FP nello scenario simulato. Esempio: breakeven 18 anni significa che, con quei parametri, prima prevale FP e dopo prevale ETF.</p>
-<pre>Orizzonte < breakeven → preferisci FP
-Orizzonte > breakeven → valuta ETF
-Orizzonte ≈ breakeven → quasi indifferente</pre>
+                    <h3>Sequenza mix</h3>
+                    <p>Riassume quando cambia la scelta nel tempo. Per esempio, con i parametri default può mostrare un intervallo iniziale in MIX e poi un intervallo finale in FP. È più utile del singolo anno di “FP pieno”, perché mostra tutta la traiettoria consigliata.</p>
+<pre>Orizzonte breve → spesso FP sulla quota deducibile
+Orizzonte lungo → spesso PAC sulla quota deducibile
+Caso intermedio → possibile MIX
+Quota oltre deduzione → sempre PAC</pre>
 
                     <h3>Le colonne della tabella</h3>
                     <table>
@@ -652,6 +664,9 @@ Orizzonte ≈ breakeven → quasi indifferente</pre>
                         <tr><td>Aderente</td><td>Totale versato da te</td></tr>
                         <tr><td>Datore</td><td>Totale versato dall'azienda</td></tr>
                         <tr><td>Risparmio</td><td>Risparmio fiscale stimato: IRPEF, addizionali e detrazioni disponibili</td></tr>
+                        <tr><td>Quota FP</td><td>Quota del budget annuo allocata nel FP dal mix, sempre entro il limite deducibile</td></tr>
+                        <tr><td>Quota PAC</td><td>Quota del budget annuo allocata nel PAC dal mix: include eccedenza non deducibile e parte deducibile se conviene PAC</td></tr>
+                        <tr><td>Scelta</td><td>FP, PAC o MIX per indicare l'allocazione consigliata di quell'anno</td></tr>
                         <tr><td>Exit</td><td>Netto se esci a quell'anno</td></tr>
                     </table>
 

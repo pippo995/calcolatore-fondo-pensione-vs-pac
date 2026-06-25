@@ -3,28 +3,9 @@ import test from 'node:test';
 
 import {
   buildInputWarnings,
-  getScenarioSelection,
   resolveRendimentoFp,
   resolveRendimentoPac
 } from '../js/utils/input-helpers.js';
-
-test('risolve gli scenari rendimento predefiniti', () => {
-  assert.deepEqual(getScenarioSelection('prudente'), {
-    compartoFp: 'garantito',
-    etfPreset: 'lifeStrategy40'
-  });
-  assert.deepEqual(getScenarioSelection('centrale'), {
-    compartoFp: 'dinamico',
-    etfPreset: 'msciWorld'
-  });
-  assert.deepEqual(getScenarioSelection('aggressivo'), {
-    compartoFp: 'custom',
-    etfPreset: 'custom',
-    rendimentoFp: 5,
-    rendimentoPac: 10
-  });
-  assert.equal(getScenarioSelection('custom'), null);
-});
 
 test('risolve i rendimenti dei preset FP e PAC', () => {
   assert.equal(resolveRendimentoFp('garantito'), 2);
@@ -53,6 +34,23 @@ test('genera warning per input potenzialmente fuorvianti', () => {
   assert.match(warnings[1], /rendimento ipotizzato molto più alto/);
   assert.match(warnings[2], /Addizionali sopra il 4%/);
   assert.match(warnings[3], /Ulteriori detrazioni elevate/);
+});
+
+test('segnala rendimento PAC inferiore al rendimento FP', () => {
+  const warnings = buildInputWarnings({
+    reddito: 30000,
+    investimento: 3000,
+    quotaDatoreFpPerc: 0.015,
+    quotaMinAderentePerc: 0.01,
+    rendimentoAnnualeFpPerc: 0.05,
+    rendimentoAnnualePacPerc: 0.04,
+    addizionaliPerc: 0.02,
+    ulterioriDetrazioni: 0
+  });
+
+  assert.deepEqual(warnings, [
+    'Il rendimento PAC ipotizzato è più basso del rendimento FP: in questo scenario il confronto perde senso, perché il PAC non ha un vantaggio di rendimento atteso.'
+  ]);
 });
 
 test('segnala quota minima datore non raggiunta', () => {

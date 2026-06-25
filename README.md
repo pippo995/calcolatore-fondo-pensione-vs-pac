@@ -4,20 +4,23 @@ https://pippo995.github.io/calcolatore-fondo-pensione-vs-pac/
 
 Confronta **Fondo Pensione** e **PAC in ETF** nel contesto fiscale italiano.
 
+Assunzione principale: il modello è pensato per un **lavoratore dipendente** e usa RAL, contributi INPS stimati, detrazioni da lavoro dipendente e possibile contributo del datore.
+
 ## Cosa fa
 
-- Calcola il valore netto finale di FP, PAC e strategia mista
+- Calcola il valore netto finale di FP, PAC e mix consigliato
 - Tiene conto di: deduzione IRPEF, contributo datore, tassazione all'uscita
-- Mostra il breakeven (quando il PAC supera il FP)
+- Ottimizza la quota deducibile tra FP e PAC anno per anno
+- Considera la quota oltre deduzione sempre nel PAC
 
 ## Opzioni
 
 | Opzione | Descrizione |
 |---------|-------------|
-| Cumulativo | Versamento ogni anno vs singolo versamento |
-| Reinvesti deduzione | Reinveste il risparmio fiscale nel FP |
 | Riscatto anticipato | Tassazione 23% invece di 15%→9% |
-| Mostra dettaglio | Tutte le colonne vs solo Exit |
+| Viste tabella | Mix, confronto scenari o dettaglio completo |
+
+Il calcolo è sempre cumulativo e reinveste sempre il risparmio fiscale stimato l'anno successivo: il beneficio fiscale non è trattato come bonus separato, ma come capitale da reinvestire per confrontare FP e PAC in modo coerente.
 
 ## Avvio locale
 

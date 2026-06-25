@@ -98,12 +98,14 @@ header {
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    min-width: 0;
 }
 
 .logo {
     display: flex;
     align-items: center;
     gap: 1rem;
+    min-width: 0;
 }
 
 .logo-icon {
@@ -122,6 +124,7 @@ header {
     font-size: 1.125rem;
     font-weight: 600;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .subheader {
@@ -156,6 +159,7 @@ header {
     box-shadow: 0 1px 2px rgb(37 99 235 / 0.08);
     overflow-x: auto;
     flex: 0 0 auto;
+    min-width: 0;
 }
 
 .tab {
@@ -232,7 +236,7 @@ header {
     border-top-color: var(--color-metric-mix);
 }
 
-.metric-card.metric-breakeven {
+.metric-card.metric-sequence {
     border-top-color: var(--color-metric-breakeven);
 }
 
@@ -250,6 +254,12 @@ header {
     font-weight: 700;
     font-family: var(--font-mono);
     color: var(--color-text-primary);
+}
+
+.metric-value-compact {
+    font-size: 1rem;
+    line-height: 1.35;
+    white-space: normal;
 }
 
 .metric-subtitle {
@@ -293,6 +303,7 @@ header {
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-blue-line);
     overflow: hidden;
+    min-width: 0;
 }
 
 .param-card-full {
@@ -429,6 +440,8 @@ select.form-control::-ms-expand {
     background: var(--color-blue-soft);
     border-radius: var(--radius-sm);
     border: 1px solid var(--color-blue-line);
+    min-width: 0;
+    max-width: 100%;
 }
 
 .info-box i {
@@ -763,6 +776,46 @@ select.form-control::-ms-expand {
     display: none;
 }
 
+.table-view-tabs {
+    display: flex;
+    gap: 0.375rem;
+    margin-bottom: 0.875rem;
+    padding: 0.25rem;
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid var(--color-blue-line);
+    border-radius: var(--radius-md);
+    background: #f8fbff;
+    overflow-x: auto;
+}
+
+.table-view-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.table-view-tab:hover {
+    color: var(--color-text-primary);
+    background: var(--color-blue-soft);
+}
+
+.table-view-tab.active {
+    color: white;
+    background: linear-gradient(135deg, var(--color-accent-primary), #3b82f6);
+}
+
 /* ============================================
    Chart Section
    ============================================ */
@@ -841,6 +894,22 @@ table {
 #output-table {
     table-layout: fixed;
     min-width: 900px;
+}
+
+#output-table.table-fp {
+    min-width: 680px;
+}
+
+#output-table.table-pac {
+    min-width: 360px;
+}
+
+#output-table.table-mix {
+    min-width: 760px;
+}
+
+#output-table.table-comparison {
+    min-width: 620px;
 }
 
 #output-table td {
@@ -932,18 +1001,6 @@ td.best-value {
     gap: 0.75rem;
 }
 
-/* ============================================
-   Strategy Section
-   ============================================ */
-.strategy-explanation {
-    background: rgba(59, 130, 246, 0.05);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.875rem;
-}
-
 .badge {
     display: inline-block;
     padding: 0.25rem 0.5rem;
@@ -953,16 +1010,6 @@ td.best-value {
     letter-spacing: 0.05em;
     border-radius: var(--radius-sm);
     margin-right: 0.5rem;
-}
-
-.badge-primary {
-    background: var(--color-accent-primary);
-    color: white;
-}
-
-#strategy-div {
-    font-size: 0.875rem;
-    line-height: 1.8;
 }
 
 /* Loading Animation */
@@ -1007,6 +1054,41 @@ td.best-value {
 .docs-section * {
     max-width: 100%;
     box-sizing: border-box;
+}
+
+.docs-index {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 280px;
+    padding: 0;
+    margin: 0 0 2rem;
+    background: transparent;
+    border-left: 3px solid var(--color-accent-primary);
+}
+
+.docs-index strong {
+    display: block;
+    padding: 0 0 0.5rem 0.875rem;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    color: var(--color-text-primary);
+}
+
+.docs-index a {
+    display: block;
+    padding: 0.45rem 0.875rem;
+    border-top: 1px solid var(--color-border-soft);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1.35;
+}
+
+.docs-index a:hover {
+    color: var(--color-accent-primary);
+    background: var(--color-blue-soft);
 }
 
 /* Typography */

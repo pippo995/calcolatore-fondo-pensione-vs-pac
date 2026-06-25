@@ -1,15 +1,5 @@
 import { COMPARTI_FP, ETF_PRESETS } from '../constants/financial-constants.js';
 
-export const SCENARI_RENDIMENTO = {
-  prudente: { compartoFp: 'garantito', etfPreset: 'lifeStrategy40' },
-  centrale: { compartoFp: 'dinamico', etfPreset: 'msciWorld' },
-  aggressivo: { compartoFp: 'custom', etfPreset: 'custom', rendimentoFp: 5, rendimentoPac: 10 }
-};
-
-export function getScenarioSelection(scenario) {
-  return SCENARI_RENDIMENTO[scenario] || null;
-}
-
 export function resolveRendimentoFp(compartoId, fallback = 0) {
   const comparto = COMPARTI_FP[compartoId];
   return comparto ? comparto.rendimentoDefault : fallback;
@@ -32,8 +22,12 @@ export function buildInputWarnings(config) {
     warnings.push('Con questi input non raggiungi la quota minima per ottenere il contributo del datore.');
   }
 
+  if (config.rendimentoAnnualePacPerc < config.rendimentoAnnualeFpPerc) {
+    warnings.push('Il rendimento PAC ipotizzato è più basso del rendimento FP: in questo scenario il confronto perde senso, perché il PAC non ha un vantaggio di rendimento atteso.');
+  }
+
   if (config.rendimentoAnnualePacPerc - config.rendimentoAnnualeFpPerc >= 0.06) {
-    warnings.push('Il PAC ha un rendimento ipotizzato molto più alto del FP: il breakeven sarà particolarmente sensibile a questa scelta.');
+    warnings.push('Il PAC ha un rendimento ipotizzato molto più alto del FP: il mix consigliato sarà particolarmente sensibile a questa scelta.');
   }
 
   if (config.addizionaliPerc > 0.04) {

@@ -25,7 +25,7 @@ export class FinancialView {
       document.getElementById('metric-pac-value').textContent = this.formatMoney(exitPAC);
       document.getElementById('metric-mix-value').textContent = this.formatMoney(exitMix);
 
-      // Trova la strategia migliore
+      // Trova lo scenario migliore
       const values = [
         { id: 'fp', value: exitFP, card: document.querySelector('.metric-card.metric-fp') },
         { id: 'pac', value: exitPAC, card: document.querySelector('.metric-card.metric-pac') },
@@ -54,27 +54,58 @@ export class FinancialView {
     /**
      * Crea una tabella dei risultati e la renderizza
      * @param {Array} results - Risultati dei calcoli
-     * @param {boolean} mostraDettaglio - Se mostrare tutte le colonne o solo Anno e Exit
+     * @param {string} tableView - Vista tabella: fp, pac, mix o comparison
      */
-    createTable(results, mostraDettaglio = true) {
+    createTable(results, tableView = 'mix') {
       if (!results.length) return;
 
-      // Colonne da mostrare in modalità semplificata
-      const colonneBase = ['Anno', 'Exit FP', 'Exit PAC', 'Exit Mix'];
+      const columnsByView = {
+        fp: [
+          { key: 'Anno', label: 'Anno' },
+          { key: 'Entro Ded', label: 'Quota FP' },
+          { key: 'Extra Ded', label: 'Quota PAC extra' },
+          { key: 'Datore', label: 'Datore' },
+          { key: 'Risparmio', label: 'Risparmio fiscale' },
+          { key: 'Exit FP', label: 'Exit FP' }
+        ],
+        pac: [
+          { key: 'Anno', label: 'Anno' },
+          { key: 'Aderente', label: 'Quota PAC' },
+          { key: 'Exit PAC', label: 'Exit PAC' }
+        ],
+        mix: [
+          { key: 'Anno', label: 'Anno' },
+          { key: 'Scelta', label: 'Scelta' },
+          { key: 'FP Cons', label: 'Quota FP' },
+          { key: 'PAC Cons', label: 'Quota PAC' },
+          { key: 'Datore', label: 'Datore' },
+          { key: 'Risparmio', label: 'Risparmio fiscale' },
+          { key: 'Exit Mix', label: 'Exit Mix' }
+        ],
+        comparison: [
+          { key: 'Anno', label: 'Anno' },
+          { key: 'Exit FP', label: 'FP deducibile' },
+          { key: 'Exit PAC', label: 'Tutto PAC' },
+          { key: 'Exit Mix', label: 'Mix' }
+        ]
+      };
+      const columns = columnsByView[tableView] || columnsByView.mix;
 
       const rows = results.map(result => {
-        return Object.entries(result)
-          .filter(([key]) => mostraDettaglio || colonneBase.includes(key))
-          .map(([key, value]) => {
-            if (key !== "Anno") {
-              value = this.formatMoney(value);
-            }
-            return [key, value];
-          });
-      }).map(entryArray => Object.fromEntries(entryArray));
+        const row = {};
+        columns.forEach(({ key, label }) => {
+          let value = result[key];
+          if (key !== 'Anno' && typeof value === 'number') {
+            value = this.formatMoney(value);
+          }
+          row[label] = value;
+        });
+        return row;
+      });
 
       const table = document.createElement('table');
       table.id = 'output-table';
+      table.className = `table-${tableView}`;
 
       // Crea l'header della tabella
       const thead = document.createElement('thead');
@@ -108,25 +139,42 @@ export class FinancialView {
       griddiv.appendChild(table);
     }
 
-    /**
-     * Aggiorna la visualizzazione del breakeven
-     * @param {number|null} breakeven - Anno di breakeven o null
-     */
-    updateBreakeven(breakeven, durata) {
-      const element = document.getElementById('metric-breakeven-value');
-      const subtitle = document.getElementById('metric-breakeven-subtitle');
-      if (element) {
-        if (breakeven) {
-          element.textContent = `Anno ${breakeven}`;
-          if (subtitle) {
-            subtitle.textContent = 'Da qui il PAC supera il FP';
-          }
+    updateChoiceSequence(results) {
+      const element = document.getElementById('metric-sequence-value');
+      const subtitle = document.getElementById('metric-sequence-subtitle');
+      if (!element || !results.length) return;
+
+      const intervals = [];
+      let current = {
+        start: results[0].Anno,
+        end: results[0].Anno,
+        choice: results[0].Scelta
+      };
+
+      for (let i = 1; i < results.length; i++) {
+        const row = results[i];
+        if (row.Scelta === current.choice) {
+          current.end = row.Anno;
         } else {
-          element.textContent = 'Mai';
-          if (subtitle) {
-            subtitle.textContent = `PAC non supera entro ${durata} anni`;
-          }
+          intervals.push(current);
+          current = { start: row.Anno, end: row.Anno, choice: row.Scelta };
         }
+      }
+      intervals.push(current);
+
+      element.textContent = intervals
+        .map(interval => {
+          const range = interval.start === interval.end
+            ? `Anno ${interval.start}`
+            : `${interval.start}-${interval.end}`;
+          return `${range}: ${interval.choice}`;
+        })
+        .join(' · ');
+
+      if (subtitle) {
+        subtitle.textContent = intervals.length === 1
+          ? 'Stessa scelta per tutta la durata'
+          : 'Quando cambia la scelta annuale';
       }
     }
 
@@ -212,7 +260,7 @@ export class FinancialView {
               fill: false
             },
             {
-              label: 'Exit Mix',
+              label: 'Mix',
               data: exitMix,
               borderColor: colors.mix,
               backgroundColor: colors.mix + '20',

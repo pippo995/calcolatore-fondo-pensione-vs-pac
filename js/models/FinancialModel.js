@@ -9,7 +9,7 @@ export class FinancialModel {
      * Calcola tutti gli scenari finanziari basati sui parametri di input
      * Supporta 4 combinazioni: singolo/cumulativo x reinvesti/non-reinvesti
      * @param {Object} config - Oggetto di configurazione con tutti i parametri
-     * @returns {Object} Risultati e informazioni sulla strategia
+     * @returns {Object} Risultati e informazioni sul mix
      */
     calculateResults(config) {
       const {
@@ -20,259 +20,279 @@ export class FinancialModel {
         addizionaliPerc = 0, ulterioriDetrazioni = 0
       } = config;
 
-      const results = [];
-
-      // Calcoli base
+      const optimizedResults = [];
+      const fpStrategyResults = [];
+      const pacStrategyResults = [];
       const quotaMinAderente = reddito * quotaMinAderentePerc;
-      const quotaDatoreFp = investimento >= quotaMinAderente ? reddito * quotaDatoreFpPerc : 0;
-      const limiteDeduzione = Math.max(FINANCIAL_CONSTANTS.LIMITE_DEDUZIONE_FP - quotaDatoreFp, 0);
-
+      const quotaDatorePotenziale = reddito * quotaDatoreFpPerc;
       const rFP = rendimentoAnnualeFpPerc;
       const rPAC = rendimentoAnnualePacPerc;
 
-      // Variabili di stato per la simulazione anno per anno
-      let montanteFP = 0;
-      let montantePAC = 0;
-      let montanteFPMix = 0;
-      let montantePACMix = 0;
-      let investimentoTotalePAC = 0;
-      let investimentoTotalePACMix = 0;
-      let risparmioAccumulato = 0;
-      let contributoAderenteTotale = 0;
-      let contributoDatoreTotale = 0;
-      let contributoFPMixTotale = 0; // Tracking contributi FP nella strategia Mix
-
-      // Risparmio fiscale dell'anno PRECEDENTE (disponibile per reinvestimento quest'anno)
-      let risparmioDaReinvestire = 0;
-
-      // Quote per l'anno corrente (non cumulate - sono caratteristiche dell'investimento annuale)
-      let quotaEntroMinAnno = 0;
-      let quotaExtraMinAnno = 0;
-      let quotaEntroDedAnno = 0;
-      let quotaExtraDedAnno = 0;
+      const fpPlan = this._createStrategyState();
+      const pacPlan = this._createStrategyState();
+      const recommendedPlan = this._createStrategyState();
 
       for (let anno = 1; anno <= durata; anno++) {
-        // Calcola il risparmio fiscale base di quest'anno (solo sull'investimento base)
-        const risparmioAnnoBase = this._calculateTaxSavings(
+        const budgetBaseAnno = modalitaCumulativa || anno === 1 ? investimento : 0;
+        const tassazioneFP = this.calcolaTassazioneFp(anno - 1, riscattoAnticipato);
+        const anniResidui = durata - anno + 1;
+
+        const fpBudget = budgetBaseAnno + (reinvestiRisparmio ? fpPlan.risparmioDaReinvestire : 0);
+        const pacBudget = budgetBaseAnno;
+        const recommendedBudget = budgetBaseAnno + (reinvestiRisparmio ? recommendedPlan.risparmioDaReinvestire : 0);
+
+        const fpAllocation = this._splitBudget(fpBudget, quotaMinAderente, quotaDatorePotenziale);
+        const pacCapacity = this._splitBudget(pacBudget, quotaMinAderente, quotaDatorePotenziale);
+        const recommendedCapacity = this._splitBudget(recommendedBudget, quotaMinAderente, quotaDatorePotenziale);
+        const recommendedAllocation = this._optimizeRecommendedAllocation({
+          budget: recommendedBudget,
+          quotaMinAderente,
+          quotaDatorePotenziale,
           reddito,
-          investimento,
-          quotaDatoreFp,
+          addizionaliPerc,
+          ulterioriDetrazioni,
+          rFP,
+          rPAC,
+          anniResidui,
+          tassazioneFP
+        });
+
+        const risparmioFpAnno = this._calculateTaxSavings(
+          reddito,
+          fpAllocation.quotaDeducibile,
+          fpAllocation.quotaDatore,
           addizionaliPerc,
           ulterioriDetrazioni
         );
+        const risparmioRecommendedAnno = recommendedAllocation.risparmio;
 
-        // Il contributo di quest'anno dipende dalla modalità
-        let contributoFpAnno, contributoPacAnno;
-        let contributoFpMixAnno, contributoPacMixAnno;
-        let risparmioAnnoEffettivo;
-        let investimentoEffettivoAnno; // Investimento incluso il risparmio reinvestito
-        let aderenteAnno = 0; // Contributo aderente di quest'anno
-        let datoreAnno = 0; // Contributo datore di quest'anno
-
-        if (modalitaCumulativa) {
-          // MODALITÀ CUMULATIVA: investi ogni anno
-          if (reinvestiRisparmio) {
-            // Anno 1: solo investimento base (nessun risparmio precedente)
-            // Anno 2+: investimento base + risparmio fiscale dell'anno precedente
-            investimentoEffettivoAnno = investimento + risparmioDaReinvestire;
-            contributoFpAnno = investimentoEffettivoAnno + quotaDatoreFp;
-
-            // Calcola il risparmio fiscale generato QUEST'ANNO (disponibile l'anno prossimo)
-            const deduzioneAnno = Math.min(investimentoEffettivoAnno, limiteDeduzione);
-            risparmioAnnoEffettivo = this._calculateTaxSavings(
-              reddito,
-              deduzioneAnno,
-              quotaDatoreFp,
-              addizionaliPerc,
-              ulterioriDetrazioni
-            );
-
-            // Strategia Mix
-            contributoFpMixAnno = Math.min(investimentoEffettivoAnno, limiteDeduzione) + quotaDatoreFp;
-            contributoPacMixAnno = Math.max(investimentoEffettivoAnno - limiteDeduzione, 0);
-          } else {
-            // Nessun reinvestimento: contributo fisso ogni anno
-            investimentoEffettivoAnno = investimento;
-            contributoFpAnno = investimento + quotaDatoreFp;
-            risparmioAnnoEffettivo = risparmioAnnoBase;
-
-            // Strategia Mix
-            contributoFpMixAnno = Math.min(investimento, limiteDeduzione) + quotaDatoreFp;
-            contributoPacMixAnno = Math.max(investimento - limiteDeduzione, 0);
-          }
-
-          contributoPacAnno = investimento;
-
-          // Calcola le quote di quest'anno in base all'investimento effettivo
-          quotaEntroMinAnno = Math.min(investimentoEffettivoAnno, quotaMinAderente);
-          quotaExtraMinAnno = Math.max(investimentoEffettivoAnno - quotaMinAderente, 0);
-          quotaEntroDedAnno = Math.min(investimentoEffettivoAnno, limiteDeduzione);
-          quotaExtraDedAnno = Math.max(investimentoEffettivoAnno - limiteDeduzione, 0);
-
-          // Aggiorna montanti (versamento a inizio anno, poi crescita)
-          montanteFP = (montanteFP + contributoFpAnno) * (1 + rFP);
-          montantePAC = (montantePAC + contributoPacAnno) * (1 + rPAC);
-          montanteFPMix = (montanteFPMix + contributoFpMixAnno) * (1 + rFP);
-          montantePACMix = (montantePACMix + contributoPacMixAnno) * (1 + rPAC);
-
-          investimentoTotalePAC += contributoPacAnno;
-          investimentoTotalePACMix += contributoPacMixAnno;
-          contributoFPMixTotale += contributoFpMixAnno; // Tracking contributi FP Mix
-          risparmioAccumulato += risparmioAnnoEffettivo;
-          contributoAderenteTotale += investimentoEffettivoAnno;
-          contributoDatoreTotale += quotaDatoreFp;
-
-          // Contributi di quest'anno
-          aderenteAnno = investimentoEffettivoAnno;
-          datoreAnno = quotaDatoreFp;
-
-        } else {
-          // MODALITÀ INVESTIMENTO SINGOLO: investi solo nell'anno 1, poi reinvesti i risparmi
-          if (anno === 1) {
-            // Anno 1: investimento iniziale
-            investimentoEffettivoAnno = investimento;
-            contributoFpAnno = investimento + quotaDatoreFp;
-            contributoPacAnno = investimento;
-
-            montanteFP = contributoFpAnno * (1 + rFP);
-            montantePAC = contributoPacAnno * (1 + rPAC);
-
-            // Strategia Mix
-            contributoFpMixAnno = Math.min(investimento, limiteDeduzione) + quotaDatoreFp;
-            contributoPacMixAnno = Math.max(investimento - limiteDeduzione, 0);
-            montanteFPMix = contributoFpMixAnno * (1 + rFP);
-            montantePACMix = contributoPacMixAnno * (1 + rPAC);
-
-            investimentoTotalePAC = contributoPacAnno;
-            investimentoTotalePACMix = contributoPacMixAnno;
-            contributoFPMixTotale = contributoFpMixAnno; // Tracking contributi FP Mix
-
-            // Risparmio fiscale generato nell'anno 1 (disponibile dall'anno 2)
-            risparmioAnnoEffettivo = risparmioAnnoBase;
-            risparmioAccumulato = risparmioAnnoEffettivo;
-            contributoAderenteTotale = investimento;
-            contributoDatoreTotale = quotaDatoreFp;
-
-            // Calcola le quote per l'anno 1
-            quotaEntroMinAnno = Math.min(investimento, quotaMinAderente);
-            quotaExtraMinAnno = Math.max(investimento - quotaMinAderente, 0);
-            quotaEntroDedAnno = Math.min(investimento, limiteDeduzione);
-            quotaExtraDedAnno = Math.max(investimento - limiteDeduzione, 0);
-
-            // Contributi di quest'anno
-            aderenteAnno = investimento;
-            datoreAnno = quotaDatoreFp;
-
-          } else {
-            // Anni 2+: solo crescita composta (e reinvesti risparmi se abilitato)
-            if (reinvestiRisparmio && risparmioDaReinvestire > 0) {
-              // Reinvesti il risparmio fiscale dell'anno precedente
-              investimentoEffettivoAnno = risparmioDaReinvestire;
-              montanteFP = (montanteFP + risparmioDaReinvestire) * (1 + rFP);
-              montanteFPMix = (montanteFPMix + risparmioDaReinvestire) * (1 + rFP);
-
-              // Calcola il nuovo (minore) risparmio fiscale dall'importo reinvestito
-              const deduzioneReinvest = Math.min(risparmioDaReinvestire, limiteDeduzione);
-              risparmioAnnoEffettivo = this._calculateTaxSavings(
-                reddito,
-                deduzioneReinvest,
-                quotaDatoreFp,
-                addizionaliPerc,
-                ulterioriDetrazioni
-              );
-
-              // Traccia il totale dei risparmi generati (per la visualizzazione)
-              risparmioAccumulato += risparmioAnnoEffettivo;
-
-              // Aggiorna le quote per quest'anno (solo risparmi reinvestiti)
-              quotaEntroMinAnno = Math.min(risparmioDaReinvestire, quotaMinAderente);
-              quotaExtraMinAnno = Math.max(risparmioDaReinvestire - quotaMinAderente, 0);
-              quotaEntroDedAnno = Math.min(risparmioDaReinvestire, limiteDeduzione);
-              quotaExtraDedAnno = Math.max(risparmioDaReinvestire - limiteDeduzione, 0);
-
-              // Aggiorna contributo totale
-              contributoAderenteTotale += risparmioDaReinvestire;
-              contributoFPMixTotale += risparmioDaReinvestire; // Tracking contributi FP Mix
-
-              // Contributi di quest'anno (solo risparmio reinvestito, datore = 0)
-              aderenteAnno = risparmioDaReinvestire;
-              datoreAnno = 0;
-            } else {
-              // Solo crescita composta, nessun nuovo contributo
-              investimentoEffettivoAnno = 0;
-              montanteFP = montanteFP * (1 + rFP);
-              montanteFPMix = montanteFPMix * (1 + rFP);
-              risparmioAnnoEffettivo = 0;
-
-              // Nessun nuovo investimento quest'anno, quindi quote a 0
-              quotaEntroMinAnno = 0;
-              quotaExtraMinAnno = 0;
-              quotaEntroDedAnno = 0;
-              quotaExtraDedAnno = 0;
-            }
-
-            montantePAC = montantePAC * (1 + rPAC);
-            montantePACMix = montantePACMix * (1 + rPAC);
-          }
-        }
-
-        // Aggiorna risparmioDaReinvestire per l'anno prossimo
-        risparmioDaReinvestire = risparmioAnnoEffettivo;
-
-        // Tassazione FP
-        const tassazioneFP = this.calcolaTassazioneFp(anno - 1, riscattoAnticipato);
-
-        const contributiTotaliFP = contributoAderenteTotale + contributoDatoreTotale;
-        const exitFP = this._calculateFpExit({
-          montante: montanteFP,
-          contributi: contributiTotaliFP,
-          tassazione: tassazioneFP,
-          risparmioAnno: risparmioAnnoEffettivo,
-          risparmioAccumulato,
+        this._applyYearGrowth(fpPlan, {
+          fpContributo: fpAllocation.quotaDeducibile + fpAllocation.quotaDatore,
+          pacContributo: fpAllocation.quotaExtraPac,
+          risparmioAnno: risparmioFpAnno,
+          rFP,
+          rPAC,
           reinvestiRisparmio
         });
-        const exitPAC = this._calculatePacExit(montantePAC, investimentoTotalePAC);
 
-        const exitFPMix = this._calculateFpExit({
-          montante: montanteFPMix,
-          contributi: contributoFPMixTotale,
-          tassazione: tassazioneFP,
-          risparmioAnno: risparmioAnnoEffettivo,
-          risparmioAccumulato,
+        this._applyYearGrowth(pacPlan, {
+          fpContributo: 0,
+          pacContributo: pacBudget,
+          risparmioAnno: 0,
+          rFP,
+          rPAC,
           reinvestiRisparmio
         });
-        const exitPACMix = this._calculatePacExit(montantePACMix, investimentoTotalePACMix);
-        const exitMix = exitFPMix + exitPACMix;
 
-        // Memorizza i risultati per quest'anno
-        // Tutti i valori sono PER ANNO (non cumulati)
-        results.push(this._createResultRow({
+        this._applyYearGrowth(recommendedPlan, {
+          fpContributo: recommendedAllocation.quotaFp + recommendedAllocation.quotaDatore,
+          pacContributo: recommendedAllocation.quotaPac,
+          risparmioAnno: risparmioRecommendedAnno,
+          rFP,
+          rPAC,
+          reinvestiRisparmio
+        });
+
+        const exitFP = this._calculateStrategyExit(fpPlan, tassazioneFP, reinvestiRisparmio);
+        const exitPAC = this._calculateStrategyExit(pacPlan, tassazioneFP, reinvestiRisparmio);
+        const exitRecommended = this._calculateStrategyExit(recommendedPlan, tassazioneFP, reinvestiRisparmio);
+
+        optimizedResults.push(this._createResultRow({
           anno,
-          quotaEntroMinAnno,
-          quotaExtraMinAnno,
-          quotaEntroDedAnno,
-          quotaExtraDedAnno,
-          aderenteAnno,
-          datoreAnno,
-          risparmioAnnoEffettivo,
+          quotaEntroMinAnno: Math.min(recommendedCapacity.quotaDeducibile, quotaMinAderente),
+          quotaExtraMinAnno: Math.max(recommendedCapacity.quotaDeducibile - quotaMinAderente, 0),
+          quotaEntroDedAnno: recommendedCapacity.quotaDeducibile,
+          quotaExtraDedAnno: recommendedCapacity.quotaExtraPac,
+          aderenteAnno: recommendedBudget,
+          datoreAnno: recommendedAllocation.quotaDatore,
+          risparmioAnnoEffettivo: risparmioRecommendedAnno,
+          quotaFpConsigliataAnno: recommendedAllocation.quotaFp,
+          quotaPacConsigliataAnno: recommendedAllocation.quotaPac,
+          sceltaAnno: recommendedAllocation.scelta,
           exitFP,
           exitPAC,
-          exitMix
+          exitMix: exitRecommended
+        }));
+
+        fpStrategyResults.push(this._createResultRow({
+          anno,
+          quotaEntroMinAnno: Math.min(fpAllocation.quotaDeducibile, quotaMinAderente),
+          quotaExtraMinAnno: Math.max(fpAllocation.quotaDeducibile - quotaMinAderente, 0),
+          quotaEntroDedAnno: fpAllocation.quotaDeducibile,
+          quotaExtraDedAnno: fpAllocation.quotaExtraPac,
+          aderenteAnno: fpBudget,
+          datoreAnno: fpAllocation.quotaDatore,
+          risparmioAnnoEffettivo: risparmioFpAnno,
+          quotaFpConsigliataAnno: fpAllocation.quotaDeducibile,
+          quotaPacConsigliataAnno: fpAllocation.quotaExtraPac,
+          sceltaAnno: fpAllocation.quotaExtraPac > 0 ? 'MIX' : 'FP',
+          exitFP,
+          exitPAC,
+          exitMix: exitFP
+        }));
+
+        pacStrategyResults.push(this._createResultRow({
+          anno,
+          quotaEntroMinAnno: Math.min(pacCapacity.quotaDeducibile, quotaMinAderente),
+          quotaExtraMinAnno: Math.max(pacCapacity.quotaDeducibile - quotaMinAderente, 0),
+          quotaEntroDedAnno: pacCapacity.quotaDeducibile,
+          quotaExtraDedAnno: pacCapacity.quotaExtraPac,
+          aderenteAnno: pacBudget,
+          datoreAnno: 0,
+          risparmioAnnoEffettivo: 0,
+          quotaFpConsigliataAnno: 0,
+          quotaPacConsigliataAnno: pacBudget,
+          sceltaAnno: 'PAC',
+          exitFP,
+          exitPAC,
+          exitMix: exitPAC
         }));
       }
 
-      // Per il valore di ritorno, usa i risparmi accumulati finali
-      const risparmioImpostaFinale = risparmioAccumulato;
-
-      // Calcola l'anno di breakeven (quando il PAC diventa migliore del FP)
-      const breakeven = this._calculateBreakeven(results);
+      const finalOptimized = optimizedResults.at(-1)['Exit Mix'];
+      const finalFp = optimizedResults.at(-1)['Exit FP'];
+      const finalPac = optimizedResults.at(-1)['Exit PAC'];
+      const selectedStrategy = [
+        { results: optimizedResults, plan: recommendedPlan, exit: finalOptimized },
+        { results: fpStrategyResults, plan: fpPlan, exit: finalFp },
+        { results: pacStrategyResults, plan: pacPlan, exit: finalPac }
+      ].reduce((best, current) => current.exit > best.exit ? current : best);
+      const results = selectedStrategy.results;
+      const breakeven = this._calculateFirstFullFpYear(results);
 
       return {
         results,
         breakeven,
-        risparmioImposta: Math.round(risparmioImpostaFinale),
-        quotaDatoreFp: Math.round(quotaDatoreFp)
+        risparmioImposta: Math.round(selectedStrategy.plan.risparmioAccumulato),
+        quotaDatoreFp: investimento >= quotaMinAderente ? Math.round(quotaDatorePotenziale) : 0
       };
+    }
+
+    _createStrategyState() {
+      return {
+        montanteFP: 0,
+        contributiFP: 0,
+        montantePAC: 0,
+        investimentoPAC: 0,
+        risparmioAccumulato: 0,
+        risparmioDaReinvestire: 0
+      };
+    }
+
+    _splitBudget(budget, quotaMinAderente, quotaDatorePotenziale) {
+      if (budget <= 0) {
+        return { quotaDeducibile: 0, quotaExtraPac: 0, quotaDatore: 0 };
+      }
+
+      const quotaDatore = budget >= quotaMinAderente ? quotaDatorePotenziale : 0;
+      const limiteDeduzione = Math.max(FINANCIAL_CONSTANTS.LIMITE_DEDUZIONE_FP - quotaDatore, 0);
+      const quotaDeducibile = Math.min(budget, limiteDeduzione);
+
+      return {
+        quotaDeducibile,
+        quotaExtraPac: Math.max(budget - quotaDeducibile, 0),
+        quotaDatore: quotaDeducibile >= quotaMinAderente ? quotaDatore : 0
+      };
+    }
+
+    _optimizeRecommendedAllocation({
+      budget,
+      quotaMinAderente,
+      quotaDatorePotenziale,
+      reddito,
+      addizionaliPerc,
+      ulterioriDetrazioni,
+      rFP,
+      rPAC,
+      anniResidui,
+      tassazioneFP
+    }) {
+      if (budget <= 0) {
+        return { quotaFp: 0, quotaPac: 0, quotaDatore: 0, risparmio: 0, scelta: 'PAC' };
+      }
+
+      const candidates = new Set([0]);
+      const maxWithoutEmployer = Math.min(budget, FINANCIAL_CONSTANTS.LIMITE_DEDUZIONE_FP);
+      const maxWithEmployer = Math.min(
+        budget,
+        Math.max(FINANCIAL_CONSTANTS.LIMITE_DEDUZIONE_FP - quotaDatorePotenziale, 0)
+      );
+
+      for (let amount = 0; amount <= Math.floor(maxWithoutEmployer); amount++) {
+        candidates.add(amount);
+      }
+      candidates.add(maxWithoutEmployer);
+      candidates.add(maxWithEmployer);
+      candidates.add(Math.min(quotaMinAderente, budget));
+
+      let best = null;
+
+      for (const candidate of candidates) {
+        const quotaFp = Math.max(candidate, 0);
+        const quotaDatore = quotaFp >= quotaMinAderente ? quotaDatorePotenziale : 0;
+        const limiteDeduzione = Math.max(FINANCIAL_CONSTANTS.LIMITE_DEDUZIONE_FP - quotaDatore, 0);
+
+        if (quotaFp > budget || quotaFp > limiteDeduzione) continue;
+
+        const quotaPac = budget - quotaFp;
+        const risparmio = quotaFp > 0
+          ? this._calculateTaxSavings(
+            reddito,
+            quotaFp,
+            quotaDatore,
+            addizionaliPerc,
+            ulterioriDetrazioni
+          )
+          : 0;
+        const fpContributo = quotaFp + quotaDatore;
+        const fpMontante = fpContributo * Math.pow(1 + rFP, anniResidui);
+        const fpNetto = fpMontante - (fpContributo * tassazioneFP) + risparmio;
+        const pacMontante = quotaPac * Math.pow(1 + rPAC, anniResidui);
+        const pacNetto = this._calculatePacExit(pacMontante, quotaPac);
+        const totaleNetto = fpNetto + pacNetto;
+
+        if (!best || totaleNetto > best.totaleNetto) {
+          best = { quotaFp, quotaPac, quotaDatore, risparmio, totaleNetto };
+        }
+      }
+
+      const scelta = best.quotaFp <= 0
+        ? 'PAC'
+        : best.quotaPac <= 0
+          ? 'FP'
+          : 'MIX';
+
+      return { ...best, scelta };
+    }
+
+    _applyYearGrowth(state, {
+      fpContributo,
+      pacContributo,
+      risparmioAnno,
+      rFP,
+      rPAC,
+      reinvestiRisparmio
+    }) {
+      state.montanteFP = (state.montanteFP + fpContributo) * (1 + rFP);
+      state.contributiFP += fpContributo;
+      state.montantePAC = (state.montantePAC + pacContributo) * (1 + rPAC);
+      state.investimentoPAC += pacContributo;
+      state.risparmioAccumulato += risparmioAnno;
+      state.risparmioDaReinvestire = reinvestiRisparmio ? risparmioAnno : 0;
+    }
+
+    _calculateStrategyExit(state, tassazioneFP, reinvestiRisparmio) {
+      const exitFP = this._calculateFpExit({
+        montante: state.montanteFP,
+        contributi: state.contributiFP,
+        tassazione: tassazioneFP,
+        risparmioAnno: state.risparmioDaReinvestire,
+        risparmioAccumulato: state.risparmioAccumulato,
+        reinvestiRisparmio
+      });
+      const exitPAC = this._calculatePacExit(state.montantePAC, state.investimentoPAC);
+
+      return exitFP + exitPAC;
     }
 
     /**
@@ -309,6 +329,9 @@ export class FinancialModel {
       aderenteAnno,
       datoreAnno,
       risparmioAnnoEffettivo,
+      quotaFpConsigliataAnno,
+      quotaPacConsigliataAnno,
+      sceltaAnno,
       exitFP,
       exitPAC,
       exitMix
@@ -322,6 +345,9 @@ export class FinancialModel {
         "Aderente": Math.round(aderenteAnno),
         "Datore": Math.round(datoreAnno),
         "Risparmio": Math.round(risparmioAnnoEffettivo),
+        "FP Cons": Math.round(quotaFpConsigliataAnno),
+        "PAC Cons": Math.round(quotaPacConsigliataAnno),
+        "Scelta": sceltaAnno,
         "Exit FP": Math.round(exitFP),
         "Exit PAC": Math.round(exitPAC),
         "Exit Mix": Math.round(exitMix),
@@ -329,17 +355,18 @@ export class FinancialModel {
     }
 
     /**
-     * Calcola l'anno di breakeven quando l'exit del PAC supera quello del FP
+     * Calcola il primo anno in cui tutta la quota deducibile va nel FP.
+     * Prima di questo anno il mix puo comunque usare uno split FP/PAC.
      * @param {Array} results - Risultati dei calcoli
-     * @returns {number|null} Anno di breakeven o null se il PAC non supera mai il FP
+     * @returns {number|null} Primo anno FP pieno o null se non avviene
      */
-    _calculateBreakeven(results) {
+    _calculateFirstFullFpYear(results) {
       for (let i = 0; i < results.length; i++) {
-        if (results[i]['Exit PAC'] > results[i]['Exit FP']) {
+        if (results[i]['Entro Ded'] > 0 && results[i]['FP Cons'] >= results[i]['Entro Ded']) {
           return results[i]['Anno'];
         }
       }
-      return null; // Il PAC non supera mai il FP nella durata
+      return null;
     }
 
     /**
